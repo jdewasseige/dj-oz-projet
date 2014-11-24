@@ -1,1 +1,17 @@
 *~
+*.log
+*.aux
+*.swp
+*.DS_Store
+*.d
+*.fls
+*.temp
+*.div
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.pdf
+!./Projet2014.pdf
