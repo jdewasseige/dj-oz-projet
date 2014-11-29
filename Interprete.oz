@@ -15,27 +15,39 @@ fun {Interprete Partition}
 	    Nr = N
 	 end
 	 Voix =  {Interprete Part}
-	 DTot = {GivesDureeTot Voix 0.0}
+	 DTot = {GivesDureeTot Voix}
 	 {Etirer Nr/DTot Voix}
       end
    [] etirer( facteur:N Part ) then
-      if {IsInt N} then % Pour la robustesse
-	 {Etirer {IntToFloat N} {Interprete Part}}
-      else
-	 {Etirer N {Interprete Part}}
+      local Voix
+	 Voix = {Interprete Part}
+      in
+	 if {IsInt N} then % Pour la robustesse
+	    {Etirer {IntToFloat N} Voix}
+	 else
+	    {Etirer N Voix}
+	 end
       end
    [] bourdon( note:Note Part ) then
-      case Note
-      of silence then
-	 {Muet {Interprete Part}}
-      else
-	 {Bourdon {GivesH Note} {Interprete Part}}
+      local Voix
+	 Voix = {Interprete Part}
+      in
+	 case Note
+	 of silence then
+	    {Muet Voix}
+	 else
+	    {Bourdon {GivesH Note} Voix}
+	 end
       end
    [] transpose( demitons:N Part ) then
-      if {IsFloat N} then % Pour la robustesse
-	 {Transpose {FloatToInt N} {Interprete Part}}
-      else
-	 {Transpose N {Interprete Part}}
+      local Voix
+	 Voix = {Interprete Part}
+      in
+	 if {IsFloat N} then % Pour la robustesse
+	    {Transpose {FloatToInt N} Voix}
+	 else
+	    {Transpose N Voix}
+	 end
       end
    else % Partition est une note
       if Partition == silence then
@@ -69,11 +81,11 @@ fun {GivesH Note}
       case Noteext.nom
       of a then H1 = 0
       [] b then H1 = 2
-      [] c then H1 = 3
-      [] d then H1 = 5
-      [] e then H1 = 7
-      [] f then H1 = 8
-      [] g then H1 = 10
+      [] c then H1 = ~9
+      [] d then H1 = ~7
+      [] e then H1 = ~5
+      [] f then H1 = ~4
+      [] g then H1 = ~2
       end
       H2 = (Noteext.octave - 4)*12
       if Noteext.alteration == none then
@@ -136,15 +148,19 @@ fun {Transpose N Voix}
    end
 end
 
-
-fun {GivesDureeTot Voix Acc}
-   case Voix
-   of nil then Acc
-   [] Echantillon|Rest then
-      {GivesDureeTot Rest Acc+Echantillon.duree}
+fun {GivesDureeTot Voix}
+   local 
+      fun {GivesDureeTotAcc Voix Acc}
+	 case Voix
+	 of nil then Acc
+	 [] Echantillon|Rest then
+	    {GivesDureeTotAcc Rest Acc+Echantillon.duree}
+	 end
+      end
+   in
+      {GivesDureeTotAcc Voix 0.0}
    end
 end
-
 
 
 %%%%%%%%%% TESTS %%%%%%%%%%%%
@@ -153,6 +169,9 @@ Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 {Browse {Interprete Partition}}
 % Test hardcore passé avec mention :D
+
+
+
 
 % Lancer une erreur si l'octave est différente de 0, 1, 2, 3, 4 ? Pq s'arrêter à 4 ?
 % Idem pour le nom de la note, p.ex. erreur si c'est w ? Ou bien on se prend pas la tête
