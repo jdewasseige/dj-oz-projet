@@ -29,16 +29,7 @@ fun {Interprete Partition}
 	 end
       end
    [] bourdon( note:Note Part ) then
-      local Voix
-	 Voix = {Interprete Part}
-      in
-	 case Note
-	 of silence then
-	    {Muet Voix}
-	 else
-	    {Bourdon {GivesH Note} Voix}
-	 end
-      end
+      {Bourdon {GivesH Note} {Interprete Part}}
    [] transpose( demitons:N Part ) then
       local Voix
 	 Voix = {Interprete Part}
@@ -56,7 +47,7 @@ fun {Interprete Partition}
 	 echantillon(hauteur:{GivesH Partition}
 		     duree:1.0 instrument:none)
       end
-   end 
+   end
 end
 
 
@@ -76,24 +67,27 @@ end
 
 
 fun {GivesH Note}
-   local Noteext H1 H2 H3 in
-      Noteext = {ToNote Note}
-      case Noteext.nom
-      of a then H1 = 0
-      [] b then H1 = 2
-      [] c then H1 = ~9
-      [] d then H1 = ~7
-      [] e then H1 = ~5
-      [] f then H1 = ~4
-      [] g then H1 = ~2
+   if Note == silence then silence
+   else
+      local Noteext H1 H2 H3 in
+	 Noteext = {ToNote Note}
+	 case Noteext.nom
+	 of a then H1 = 0
+	 [] b then H1 = 2
+	 [] c then H1 = ~9
+	 [] d then H1 = ~7
+	 [] e then H1 = ~5
+	 [] f then H1 = ~4
+	 [] g then H1 = ~2
+	 end
+	 H2 = (Noteext.octave - 4)*12
+	 if Noteext.alteration == none then
+	    H3 = 0
+	 else
+	    H3 = 1
+	 end
+	 H1+H2+H3
       end
-      H2 = (Noteext.octave - 4)*12
-      if Noteext.alteration == none then
-	 H3 = 0
-      else
-	 H3 = 1
-      end
-      H1+H2+H3
    end
 end
 
@@ -116,11 +110,14 @@ fun {Bourdon Hb Voix}
    case Voix
    of nil then nil
    [] Echantillon|Rest then
-      case Echantillon
-      of silence(duree:D) then
-	 echantillon(hauteur:Hb duree:D instrument:none)|{Bourdon Hb Rest}
-      [] echantillon(hauteur:H duree:D instrument:I) then
-	 echantillon(hauteur:Hb duree:D instrument:I)|{Bourdon Hb Rest}
+      if Hb == silence then silence(duree:Echantillon.duree)|{Bourdon Hb Rest}
+      else
+	 case Echantillon
+	 of silence(duree:D) then
+	    echantillon(hauteur:Hb duree:D instrument:none)|{Bourdon Hb Rest}
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    echantillon(hauteur:Hb duree:D instrument:I)|{Bourdon Hb Rest}
+	 end
       end
    end
 end
@@ -156,11 +153,12 @@ end
 
 %%%%%%%%%% TESTS %%%%%%%%%%%%
 declare
-Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
-	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
-{Browse {Interprete [Partition muet(Partition)]}}
+%Partition2 = duree( secondes:24 b2)
+%{Browse {Interprete Partition2}}
+%Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
+%	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
+%{Browse {Interprete [Partition1 muet(Partition1)]}}
 % Test hard(hard)core passé avec mention :D
-
 
 
 
