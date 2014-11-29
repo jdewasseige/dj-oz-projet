@@ -5,9 +5,9 @@ fun {Mix Interprete Music}
    [] Morceau|Rest then % Pas oublier Rest !!!
       case Morceau
       of voix( Voix ) then
-	 {MixVoix Voix}|{Mix Interprete Rest}
+	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
       [] partition( Part ) then
-	 {Mix Interprete voix({Interprete Part})}|{Mix Interprete Rest}
+	 {Flatten {Mix Interprete [voix({Interprete Part})]}|{Mix Interprete Rest}}
       [] wave( FileName ) then
 	 nil
       [] merge( MusicInt ) then
@@ -57,3 +57,11 @@ end
 
 % partition() : DONE
 % voix() : DONE
+
+%%%%%%%%% TESTS %%%%%%%%%%%%%%
+\insert 'Interprete.oz'
+declare
+Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
+Music2 = [ partition( duree(secondes:0.001 [silence b2] ) ) ]
+Music3 = partition (Partition)
+{Browse {Mix Interprete Music2}}
