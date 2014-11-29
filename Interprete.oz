@@ -5,7 +5,7 @@ fun {Interprete Partition}
    [] NestedPart|Rest then
       {Flatten {Interprete NestedPart}|{Interprete Rest}}
    [] muet( Part ) then
-      {Muet {Interprete Part}}
+	{Interprete bourdon(note:silence Part)}
    [] duree( secondes:N Part ) then
       % Le rapport de duree des echantillons entre eux est conserve
       local Nr DTot Voix in
@@ -98,15 +98,6 @@ fun {GivesH Note}
 end
 
 
-fun {Muet Voix}
-   case Voix
-   of nil then nil
-   [] Ech|Rest then
-      silence(duree:Ech.duree)|{Muet Rest}
-   end
-end
-
-
 fun {Etirer N Voix}
    case Voix
    of nil then nil
@@ -172,6 +163,8 @@ Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 %{Browse {Interprete [a4 b2]}}
 %{Browse {Interprete Partition}}
 % Test hardcore passé avec mention :D
+{Browse {Interprete [Partition muet(Partition)]}}
+% Test hard(hard)core passé avec mention :D
 
 
 % Lancer une erreur si l'octave est différente de 0, 1, 2, 3, 4 ? Pq s'arrêter à 4 ?
