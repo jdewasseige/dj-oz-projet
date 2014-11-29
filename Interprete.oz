@@ -101,8 +101,8 @@ end
 fun {Muet Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      silence(duree:Echantillon.duree)|{Muet Rest}
+   [] Ech|Rest then
+      silence(duree:Ech.duree)|{Muet Rest}
    end
 end
 
@@ -110,8 +110,8 @@ end
 fun {Etirer N Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      case Echantillon
+   [] Ech|Rest then
+      case Ech
       of silence(duree:D) then
 	 silence(duree:D*N)|{Etirer N Rest}	    
       [] echantillon(hauteur:H duree:D instrument:I) then
@@ -124,8 +124,8 @@ end
 fun {Bourdon Hb Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      case Echantillon
+   [] Ech|Rest then
+      case Ech
       of silence(duree:D) then
 	 echantillon(hauteur:Hb duree:D instrument:none)|{Bourdon Hb Rest}
       [] echantillon(hauteur:H duree:D instrument:I) then
@@ -138,8 +138,8 @@ end
 fun {Transpose N Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      case Echantillon
+   [] Ech|Rest then
+      case Ech
       of silence(duree:D) then
 	 silence(duree:D)|{Transpose N Rest}
       [] echantillon(hauteur:H duree:D instrument:I) then
@@ -148,13 +148,14 @@ fun {Transpose N Voix}
    end
 end
 
+
 fun {GivesDureeTot Voix}
    local 
       fun {GivesDureeTotAcc Voix Acc}
 	 case Voix
 	 of nil then Acc
-	 [] Echantillon|Rest then
-	    {GivesDureeTotAcc Rest Acc+Echantillon.duree}
+	 [] Ech|Rest then
+	    {GivesDureeTotAcc Rest Acc+Ech.duree}
 	 end
       end
    in
@@ -167,10 +168,10 @@ end
 declare
 Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
-{Browse {Interprete Partition}}
+%{Browse {Interprete duree(secondes:0.001 [a2] )}}
+%{Browse {Interprete [a4 b2]}}
+%{Browse {Interprete Partition}}
 % Test hardcore passé avec mention :D
-
-
 
 
 % Lancer une erreur si l'octave est différente de 0, 1, 2, 3, 4 ? Pq s'arrêter à 4 ?

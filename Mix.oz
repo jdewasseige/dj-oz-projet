@@ -9,7 +9,7 @@ fun {Mix Interprete Music}
       [] partition( Part ) then
 	 {Flatten {Mix Interprete [voix({Interprete Part})]}|{Mix Interprete Rest}}
       [] wave( FileName ) then
-	 nil
+	 {Projet.readFile FileName}
       [] merge( MusicInt ) then
 	 % Fct récursive externe
 	 nil
@@ -62,6 +62,6 @@ end
 \insert 'Interprete.oz'
 declare
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-Music2 = [ partition( duree(secondes:0.001 [silence b2] ) ) ]
+Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music3 = partition (Partition)
 {Browse {Mix Interprete Music2}}
