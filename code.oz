@@ -27,7 +27,9 @@ local Mix Interprete Projet CWD in
 
       % Interprete doit interpréter une partition
       fun {Interprete Partition}
-         nil
+	 nil
+	 % On fera \insert 'Interprete.oz' (comme un \input en latex)
+	 % Mais faudra remettre un peu en forme du coup
       end
    end
 

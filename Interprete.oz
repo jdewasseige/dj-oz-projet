@@ -149,14 +149,11 @@ end
 
 %%%%%%%%%% TESTS %%%%%%%%%%%%
 declare
-Partition = duree( secondes:5 [[a4 etirer(facteur:4 [a6])] a#4 [[[b3]]]] )
-% etirer( facteur:5.1 muet( [[a4 [a6]] a#4 [[[b3]]]] ) )
+Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
+	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 {Browse {Interprete Partition}}
-% duree doit d'office etre un float : OK
-% muet : OK
-% etirer : OK
-% bourdon : OK
-% transpose : OK
-% duree : OK
+% Test hardcore passé avec mention :D
 
+% Lancer une erreur si l'octave est différente de 0, 1, 2, 3, 4 ? Pq s'arrêter à 4 ?
+% Idem pour le nom de la note, p.ex. erreur si c'est w ? Ou bien on se prend pas la tête
 % TO DO : batterie de tests
