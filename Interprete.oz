@@ -5,7 +5,7 @@ fun {Interprete Partition}
    [] NestedPart|Rest then
       {Flatten {Interprete NestedPart}|{Interprete Rest}}
    [] muet( Part ) then
-      {Muet {Interprete Part}}
+      {Muet Part}
    [] duree( secondes:N Part ) then
       % Le rapport de duree des echantillons entre eux est conserve
       local Nr DTot Voix in
@@ -98,12 +98,8 @@ fun {GivesH Note}
 end
 
 
-fun {Muet Voix}
-   case Voix
-   of nil then nil
-   [] Echantillon|Rest then
-      silence(duree:Echantillon.duree)|{Muet Rest}
-   end
+fun {Muet Part}
+   {Interprete bourdon(note:silence Part)}
 end
 
 
