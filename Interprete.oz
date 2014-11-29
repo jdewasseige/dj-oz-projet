@@ -42,10 +42,10 @@ fun {Interprete Partition}
       end
    else % Partition est une note
       if Partition == silence then
-	 silence(duree:1.0)
+	 [silence(duree:1.0)]
       else
-	 echantillon(hauteur:{GivesH Partition}
-		     duree:1.0 instrument:none)
+	 [echantillon(hauteur:{GivesH Partition}
+		     duree:1.0 instrument:none)]
       end
    end
 end
