@@ -5,7 +5,7 @@ fun {Interprete Partition}
    [] NestedPart|Rest then
       {Flatten {Interprete NestedPart}|{Interprete Rest}}
    [] muet( Part ) then
-      {Muet Part}
+	{Interprete bourdon(note:silence Part)}
    [] duree( secondes:N Part ) then
       % Le rapport de duree des echantillons entre eux est conserve
       local Nr DTot Voix in
@@ -98,11 +98,6 @@ fun {GivesH Note}
 end
 
 
-fun {Muet Part}
-   {Interprete bourdon(note:silence Part)}
-end
-
-
 fun {Etirer N Voix}
    case Voix
    of nil then nil
@@ -163,8 +158,8 @@ end
 declare
 Partition = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
-{Browse {Interprete Partition}}
-% Test hardcore passé avec mention :D
+{Browse {Interprete [Partition muet(Partition)]}}
+% Test hard(hard)core passé avec mention :D
 
 
 
