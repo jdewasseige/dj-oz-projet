@@ -95,8 +95,8 @@ end
 fun {Etirer N Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      case Echantillon
+   [] Ech|Rest then
+      case Ech
       of silence(duree:D) then
 	 silence(duree:D*N)|{Etirer N Rest}	    
       [] echantillon(hauteur:H duree:D instrument:I) then
@@ -118,7 +118,7 @@ fun {Bourdon Hb Voix}
 	 [] echantillon(hauteur:H duree:D instrument:I) then
 	    echantillon(hauteur:Hb duree:D instrument:I)|{Bourdon Hb Rest}
 	 end
-      end
+     end
    end
 end
 
@@ -126,8 +126,8 @@ end
 fun {Transpose N Voix}
    case Voix
    of nil then nil
-   [] Echantillon|Rest then
-      case Echantillon
+   [] Ech|Rest then
+      case Ech
       of silence(duree:D) then
 	 silence(duree:D)|{Transpose N Rest}
       [] echantillon(hauteur:H duree:D instrument:I) then
@@ -136,13 +136,14 @@ fun {Transpose N Voix}
    end
 end
 
+
 fun {GivesDureeTot Voix}
    local 
       fun {GivesDureeTotAcc Voix Acc}
 	 case Voix
 	 of nil then Acc
-	 [] Echantillon|Rest then
-	    {GivesDureeTotAcc Rest Acc+Echantillon.duree}
+	 [] Ech|Rest then
+	    {GivesDureeTotAcc Rest Acc+Ech.duree}
 	 end
       end
    in
@@ -158,6 +159,8 @@ declare
 %Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 %	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 %{Browse {Interprete [Partition1 muet(Partition1)]}}
+%{Browse {Interprete duree(secondes:0.001 [a2] )}}
+%{Browse {Interprete [a4 b2]}}
 % Test hard(hard)core passé avec mention :D
 
 
