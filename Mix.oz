@@ -1,4 +1,4 @@
-declare
+declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Mix Interprete Music}
    case Music
    of nil then nil
@@ -7,7 +7,7 @@ fun {Mix Interprete Music}
       of voix( Voix ) then
 	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
       [] partition( Part ) then
-	 {Flatten {Mix Interprete [voix({Interprete Part})]}|{Mix Interprete Rest}}
+	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
       [] wave( FileName ) then
 	 {Projet.readFile FileName}
       [] merge( MusicInt ) then
