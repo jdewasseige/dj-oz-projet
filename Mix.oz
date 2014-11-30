@@ -17,13 +17,31 @@ fun {Mix Interprete Music}
 	    {List.map {SumMatrix M nil} fun {$ N} N/S end}
 	    % This line adds up the audios and divides them
 	    % by S, the sum of the factors
-	 end   
-      else % Music est un filtre
+	 end  
+      [] renverser( Music ) then
+	 {Reverse {Interprete Music}} 
+      else % Music est un filtre pas encore fait
 	 nil
       end
    end
 end
 
+%%% FILTRES %%%
+
+fun {Reverse Vec}
+   local
+      fun {ReverseAcc Vec Out}
+	 case Vec
+	 of nil then Out
+	 [] H|T then {ReverseAcc T H|Out}
+	 end
+      end
+   in
+      {ReverseAcc Vec nil}
+   end
+end
+
+%%% MIX %%% 
 
 fun {MixVoix Voix}
    local F N in
@@ -53,6 +71,7 @@ fun {MixEch F I Max}
    end
 end
 
+%%% MERGE %%% 
 
 fun {MergeHelper MusicInt M S}
    % Petit mot d'explication sur M :
@@ -130,6 +149,8 @@ end
 %   Sum : DONE OK
 %   SumMatrix : DONE OK
 %   MergeHelper : DONE OK
+% filtres
+%   Reverse : DONE
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
