@@ -21,8 +21,7 @@ end
 
 
 fun {MixVoix Voix}
-   local F K Pi N
-      Pi = 3.14159
+   local F N
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
@@ -39,7 +38,8 @@ end
 
 
 fun {MixEch F I Max}
-   local K in
+   local K Pi in
+      Pi = 3.14159
       K = 2.0*Pi*F/44100.0
       if I > Max then nil
       else
