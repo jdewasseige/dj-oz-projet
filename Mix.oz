@@ -1,4 +1,4 @@
-declare
+declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Mix Interprete Music}
    case Music
    of nil then nil
@@ -7,7 +7,7 @@ fun {Mix Interprete Music}
       of voix( Voix ) then
 	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
       [] partition( Part ) then
-	 {Flatten {Mix Interprete [voix({Interprete Part})]}|{Mix Interprete Rest}}
+	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
       [] wave( FileName ) then
 	 nil
 	 %{Projet.readFile FileName}
@@ -26,34 +26,31 @@ end
 
 
 fun {MixVoix Voix}
-   case Voix
-   of nil then nil
-   [] silence(duree:D)|Rest then
-      {Silence {FloatToInt D*44100.0}}|{MixVoix Rest}
-   [] echantillon( hauteur:H duree:D instrument:I )|Rest then
-      local F K Pi in
-	 Pi = 3.14159
-	 F = {Pow 2.0 ({IntToFloat H}/12.0)} * 440.0
-	 K = 2.0*Pi*F/44100.0
-	 {MixEch K 1 {FloatToInt D*44100.0}}|{MixVoix Rest}
+   local F N
+      case Voix
+      of nil then nil
+      [] silence(duree:D)|Rest then
+	 N = {FloatToInt D*44100.0}
+	 F = 0.0
+      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+	 N = {FloatToInt D*44100.0}
+	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
+      end % gerer le cas ou Voix ne contient ni un silence ni un echantillon ?
+   in
+      {Flatten {MixEch F 1 N}|{MixVoix Rest}}
+      % Bug : Rest not introduced
+   end
+end
+
+
+fun {MixEch F I Max}
+   local K Pi in
+      Pi = 3.14159
+      K = 2.0*Pi*F/44100.0
+      if I > Max then nil
+      else
+	 0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
       end
-   end
-end
-
-
-fun {Silence N}
-   case N
-   of 0 then nil
-   else
-      0.0|{Silence N-1}
-   end
-end
-
-
-fun {MixEch K I Max}
-   if I > Max then nil
-   else
-      0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
    end
 end
 
@@ -146,4 +143,6 @@ Music4 = partition (Partition2)
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
-%{Browse {Mix Interprete Music5}}
+{Browse {Mix Interprete Music5}}
+
+% Checker si ça marche sans Silence
