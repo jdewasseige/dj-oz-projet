@@ -4,6 +4,7 @@ local Mix Interprete Projet CWD in
    % modifiez sa valeur pour correspondre à votre système.
    CWD = {Property.condGet 'testcwd'
 	  '/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/'}
+	  %’/Users/John/dj-oz-projet/'}
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}

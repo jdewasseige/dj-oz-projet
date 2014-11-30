@@ -1,4 +1,4 @@
-declare
+declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Interprete Partition}
    case Partition
    of nil then nil
@@ -153,7 +153,7 @@ end
 
 
 %%%%%%%%%% TESTS %%%%%%%%%%%%
-declare
+%declare
 %Partition2 = duree( secondes:24 b2)
 %{Browse {Interprete Partition2}}
 %Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
