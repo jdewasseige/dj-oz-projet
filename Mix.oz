@@ -22,8 +22,10 @@ fun {Mix Interprete Music}
 	 {Reverse {Interprete Music}} 
       [] repetition(nombre:N Music) then
 	 {RepetitionN N {Mix Interprete Music}}
-      [] repetition(duree:secondes Music) then
-	 {RepeteD secondes {Mix Interprete Music}}
+      [] repetition(duree:Secondes Music) then
+	 {RepeteD Secondes {Mix Interprete Music}}
+      [] clip(bas:Bas haut:Haut Music) then
+	 {Clip Bas Haut {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -71,6 +73,25 @@ fun {RepeteD Duree Vec}
       {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
    end
 end
+
+
+fun {Clip Bas Haut Vec} % erreur si H < B ??
+   local
+      fun {ClipAcc Bas Haut Vec Acc}
+	 case Vec
+	 of nil then {Reverse Acc}
+	 [] H|T then
+	    if H < Bas then {ClipAcc Bas Haut T Bas|Acc}
+	    elseif H > Haut then {ClipAcc Bas Haut Haut|Acc}
+	    else {ClipAcc Bas Haut H|Acc}
+	    end
+	 end
+      end
+   in
+      {ClipAcc Bas Haut Vec nil}
+   end
+end
+
 
 
 %%%%%%%%%%%
@@ -187,6 +208,9 @@ end
 %   MergeHelper : DONE OK
 % filtres
 %   Reverse : DONE
+%   RepeteN : DONE
+%   RepeteD : DONE
+%   Clip    : DONE
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
