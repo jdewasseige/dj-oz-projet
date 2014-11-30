@@ -26,19 +26,18 @@ end
 
 
 fun {MixVoix Voix}
-   local F N
+   local F N in
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = 0.0
+	 {Flatten {MixEch F 1 N}|{MixVoix Rest}}
       [] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
-      end % gerer le cas ou Voix ne contient ni un silence ni un echantillon ?
-   in
-      {Flatten {MixEch F 1 N}|{MixVoix Rest}}
-      % Bug : Rest not introduced
+	 {Flatten {MixEch F 1 N}|{MixVoix Rest}}
+      end
    end
 end
 
@@ -49,7 +48,7 @@ fun {MixEch F I Max}
       K = 2.0*Pi*F/44100.0
       if I > Max then nil
       else
-	 0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
+	 0.5*{Sin K*{IntToFloat I}}|{MixEch F I+1 Max}
       end
    end
 end
@@ -139,10 +138,10 @@ Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
 Music2 = [ partition( duree(secondes:0.0002 [silence b2] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-%{Browse {Mix Interprete Music1}}
+{Browse {Mix Interprete Music1}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
-{Browse {Mix Interprete Music5}}
+%{Browse {Mix Interprete Music5}}
 
 % Checker si ça marche sans Silence
