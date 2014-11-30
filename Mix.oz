@@ -26,7 +26,9 @@ fun {Mix Interprete Music}
    end
 end
 
+%%%%%%%%%%%%%%%
 %%% FILTRES %%%
+%%%%%%%%%%%%%%%
 
 fun {Reverse Vec}
    local
@@ -41,7 +43,9 @@ fun {Reverse Vec}
    end
 end
 
+%%%%%%%%%%%
 %%% MIX %%% 
+%%%%%%%%%%%
 
 fun {MixVoix Voix}
    local F N in
@@ -71,7 +75,9 @@ fun {MixEch F I Max}
    end
 end
 
-%%% MERGE %%% 
+%%%%%%%%%%%%%
+%%% MERGE %%%
+%%%%%%%%%%%%%
 
 fun {MergeHelper MusicInt M S}
    % Petit mot d'explication sur M :
@@ -159,10 +165,9 @@ Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
 Music2 = [ partition( duree(secondes:0.0002 [silence b2] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-{Browse {Mix Interprete Music1}}
+{Browse {Mix Interprete Music2}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
 
-% Checker si ça marche sans Silence
