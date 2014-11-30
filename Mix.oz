@@ -45,11 +45,14 @@ fun {RepetitionN N Vec}
 	 fun {RepetitionNAcc N Vec Acc}
 	    if N == 0 then Acc
 	    else
-	       {Repetiton N-1 Vec Vec|Acc}
+	       {RepetitionNAcc N-1 Vec Vec|Acc}
+	       % A ton avis c'est mieux de faire Append ici
+	       % et pas de Flatten en dessous ou pas?
 	    end
 	 end
       in
-	 {Flatten {RepetitionNAcc N Vec Vec}} % on considere que si la musique est repetee 0 fois, alors on la joue une fois
+	 {Flatten {RepetitionNAcc N Vec Vec}}
+         % Si N = 0, on joue la musique une fois
       end
    end
 end
@@ -65,12 +68,13 @@ fun {RepeteD Duree Vec}
 	 if Count == 0 then {Reverse Acc}
 	 else
 	    case Vec
+	    of nil then nil % J'AI MIS NIL AU HASARD
 	    [] H|T then
 	       {CompleteAcc Count-1 T H|Acc}
 	    end
 	 end
       end
-      {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
+      {Append {RepetitionN N Vec} {CompleteAcc R Vec nil}}
    end
 end
 
@@ -82,8 +86,8 @@ fun {Clip Bas Haut Vec} % erreur si H < B ??
 	 of nil then {Reverse Acc}
 	 [] H|T then
 	    if H < Bas then {ClipAcc Bas Haut T Bas|Acc}
-	    elseif H > Haut then {ClipAcc Bas Haut Haut|Acc}
-	    else {ClipAcc Bas Haut H|Acc}
+	    elseif H > Haut then {ClipAcc Bas Haut T Haut|Acc} % J'AI MIS T AU HASARD
+	    else {ClipAcc Bas Haut T H|Acc}  % J'AI MIS T AU HASARD
 	    end
 	 end
       end
@@ -221,7 +225,7 @@ end
 \insert 'Interprete.oz'
 declare
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-Music2 = [ partition( duree(secondes:0.0002 [silence b2] ) ) ]
+Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
 {Browse {Mix Interprete Music2}}
@@ -229,4 +233,7 @@ MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
+Music6 = [ repetition(nombre:2 Music2) ]
+{Browse {Mix Interprete Music6}}
 
+% TO DO : repetitionN le répète une fois de trop
