@@ -174,23 +174,28 @@ fun {Sum L1 L2}
    % This function adds up the elements of the lists L1 and L2
    % one by one. If they don't have the same length, the one
    % with smaller length is extended with zeros.
-   %
-   % Moyen d'optimiser en plaçant judicieusement le vecteur le
-   % + long en L1 ou L2 ?
-   case L1
-   of nil then
-      case L2
-      of nil then nil
-      [] H2|T2 then
-	 H2|{Sum nil T2}
+   local Lbig Lshort SumAcc
+      if {Length L1} > {Length L2} then
+	 Lbig = L1
+	 Lshort = L2
+      else
+	 Lbig = L2
+	 Lshort = L1
       end
-   [] H1|T1 then
-      case L2
-      of nil then
-	 H1|{Sum T1 nil}
-      [] H2|T2 then
-	 H1+H2|{Sum T1 T2}
+      fun {SumOpt Lshort Lbig}
+	 case Lshort
+	 of nil then
+	    case Lbig
+	    of nil then nil
+	    [] Hb|Tb then
+	       Hb|{SumOpt nil Tb}
+	    end
+	 [] Hs|Ts then
+	    (Hs+Lbig.1)|{SumOpt Ts Lbig.2}
+	 end
       end
+   in
+      {SumOpt Lshort Lbig}
    end
 end
 
