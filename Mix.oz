@@ -21,38 +21,32 @@ end
 
 
 fun {MixVoix Voix}
-   case Voix
-   of nil then nil
-   [] silence(duree:D)|Rest then
-      {Silence {FloatToInt D*44100.0}}|{MixVoix Rest}
-   [] echantillon( hauteur:H duree:D instrument:I )|Rest then
-      local F K Pi in
-	 Pi = 3.14159
-	 F = {Pow 2.0 ({IntToFloat H}/12.0)} * 440.0
-	 K = 2.0*Pi*F/44100.0
-	 {MixEch K 1 {FloatToInt D*44100.0}}|{MixVoix Rest}
+   local F K Pi N
+      Pi = 3.14159
+      case Voix
+      of nil then nil
+      [] silence(duree:D)|Rest then
+	 N = {FloatToInt D*44100.0}
+	 F = 0.0
+      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+	 N = {FloatToInt D*44100.0}
+	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
+      end % gerer le cas ou Voix ne contient ni un silence ni un echantillon ?
+   in
+      {Flatten {MixEch F 1 N}|{MixVoix Rest}}
+   end
+end
+
+
+fun {MixEch F I Max}
+   local K in
+      K = 2.0*Pi*F/44100.0
+      if I > Max then nil
+      else
+	 0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
       end
    end
 end
-
-
-fun {Silence N}
-   case N
-   of 0 then nil
-   else
-      0|{Silence N-1}
-   end
-end
-
-
-fun {MixEch K I Max}
-   if I > Max then nil
-   else
-      0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
-   end
-end
-
-
 
 
 % partition() : DONE
