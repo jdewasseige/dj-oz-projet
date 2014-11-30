@@ -20,6 +20,8 @@ fun {Mix Interprete Music}
 	 end  
       [] renverser( Music ) then
 	 {Reverse {Interprete Music}} 
+      [] repetition(nombre:N Music) then
+	 {RepetitionN N {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -27,19 +29,25 @@ fun {Mix Interprete Music}
 end
 
 %%% FILTRES %%%
+% reverse est deja implemente --'
 
-fun {Reverse Vec}
-   local
-      fun {ReverseAcc Vec Out}
-	 case Vec
-	 of nil then Out
-	 [] H|T then {ReverseAcc T H|Out}
+fun {RepetitionN N Vec}
+   local Nr in 
+      if {IsFloat N} then Nr = {FloatToInt N}
+      else Nr = N end
+      local
+	 fun {RepetitionNAcc N Vec Acc}
+	    if N == 0 then Acc
+	    else
+	       {Repetiton N-1 Vec Vec|Acc}
+	    end
 	 end
+      in
+	 {Flatten {RepetitionNAcc N Vec Vec}} % on considere que si la musique est repetee 0 fois, alors on la joue une fois
       end
-   in
-      {ReverseAcc Vec nil}
    end
 end
+
 
 %%% MIX %%% 
 
