@@ -19,9 +19,9 @@ fun {Mix Interprete Music}
 	    % by S, the sum of the factors
 	 end  
       [] renverser( Music ) then
-	 {Reverse {Interprete Music}} 
+	 {Reverse {Mix Interprete Music}} 
       [] repetition(nombre:N Music) then
-	 {RepetitionN N {Mix Interprete Music}}
+	 {RepeteN N {Mix Interprete Music}}
       [] repetition(duree:Sec Music) then
 	 {RepeteD Sec {Mix Interprete Music}}
       [] clip(bas:Bas haut:Haut Music) then
@@ -41,21 +41,25 @@ end
 %%%%%%%%%%%%%%%
 %%% FILTRES %%%
 %%%%%%%%%%%%%%%
-% reverse est deja implemente --'
 
-fun {RepetitionN N Vec}
-   local Nr in 
-      if {IsFloat N} then Nr = {FloatToInt N}
-      else Nr = N end
+fun {RepeteN N Vec}
+   local Nr in
+      % Les cas où N n'est pas un naturel sont gérés
+      if {IsFloat N} then Nr = {Abs {FloatToInt N}}
+      else Nr = {Abs N} end
       local
-	 fun {RepetitionNAcc N Vec Acc}
-	    if N == 0 then Acc
+	 fun {RepeteNAcc N Vec Acc}
+	    if N =< 0 then Acc
 	    else
-	       {Repetiton N-1 Vec Vec|Acc}
+	       {RepeteNAcc N-1 Vec {Append Vec Acc}}
+	       % A ton avis c'est mieux de faire Append ici
+	       % et pas de Flatten en-dessous ou pas?
+	       % A mon avis Flatten sans Append c'est mieux.
 	    end
 	 end
       in
-	 {Flatten {RepetitionNAcc N Vec Vec}} % on considere que si la musique est repetee 0 fois, alors on la joue une fois
+	 {RepeteNAcc N-1 Vec Vec}
+         % Si N = 0, on joue la musique une fois
       end
    end
 end
@@ -71,6 +75,7 @@ fun {RepeteD Duree Vec}
 	 if Count == 0 then {Reverse Acc}
 	 else
 	    case Vec
+	    of nil then nil % J'AI MIS NIL AU HASARD
 	    [] H|T then
 	       {CompleteAcc Count-1 T H|Acc}
 	    end
@@ -88,8 +93,8 @@ fun {Clip Bas Haut Vec} % erreur si H < B ??
 	 of nil then {Reverse Acc}
 	 [] H|T then
 	    if H < Bas then {ClipAcc Bas Haut T Bas|Acc}
-	    elseif H > Haut then {ClipAcc Bas Haut Haut|Acc}
-	    else {ClipAcc Bas Haut H|Acc}
+	    elseif H > Haut then {ClipAcc Bas Haut T Haut|Acc} % J'AI MIS T AU HASARD
+	    else {ClipAcc Bas Haut T H|Acc}  % J'AI MIS T AU HASARD
 	    end
 	 end
       end
@@ -99,7 +104,7 @@ fun {Clip Bas Haut Vec} % erreur si H < B ??
 end
 
 
-fun {EchoDDR Del Dec Rep Music} % Del delai Dec decadence Rep repetition
+fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
    local
       C1 = {CalcFirstIntensity Dec Rep}
       fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
@@ -253,22 +258,27 @@ end
 %   SumMatrix : DONE OK
 %   MergeHelper : DONE OK
 % filtres
-%   Reverse : DONE
-%   RepeteN : DONE
+%   Reverse : DONE OK
+%   RepeteN : DONE OK
 %   RepeteD : DONE
 %   Clip    : DONE
+<<<<<<< HEAD
 %   Echo    : DONE
+=======
+>>>>>>> 1c961119eba78d54341ab2a9d971dd67b63cbf56
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
 declare
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-Music2 = [ partition( duree(secondes:0.0002 [silence b2] ) ) ]
+Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-{Browse {Mix Interprete Music2}}
+%{Browse {Mix Interprete Music2}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
-
+Music6 = [ repetition(nombre:2 Music2) ]
+Music7 = [ renverser( Music2 ) ]
+{Browse {Mix Interprete Music6}}
