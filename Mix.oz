@@ -32,6 +32,8 @@ fun {Mix Interprete Music}
 	 {Mix Interpret [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interpret [merge({Echo Del Dec N Music})]}
+      [] couper(debut:Debut fin:Fin Music}
+	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -58,7 +60,7 @@ fun {RepeteN N Vec}
 	    end
 	 end
       in
-	 {RepeteNAcc N-1 Vec Vec}
+	 {RepeteNAcc N Vec Vec}
          % Si N = 0, on joue la musique une fois
       end
    end
@@ -136,8 +138,29 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
    end
 end
 
-	 
-	 
+
+fun {Couper Debut Fin Vec}
+   local
+      Init = Debut*44100.0
+      End  = Fin*44100.0
+      L = {IntToFloat {Length Vec}}
+      fun {CouperAcc Init End L0 Vec Acc}
+	 if Init >= End then {Reverse Acc}
+	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init+1.0 End Vec 0.0|Acc}
+	 else
+	    case Vec
+	    of nil then {CouperAcc Init+1.0 End Vec L0 0.0|Acc}
+	    [] H|T then {CouperAcc Init+1.0 End T H|Acc}
+	    end
+	 end
+      end
+   in
+      {CouperAcc Init End L Vec nil}
+   end
+end
+
+
+   
 
 
 %%%%%%%%%%%
@@ -262,10 +285,10 @@ end
 %   RepeteN : DONE OK
 %   RepeteD : DONE
 %   Clip    : DONE
-<<<<<<< HEAD
 %   Echo    : DONE
-=======
->>>>>>> 1c961119eba78d54341ab2a9d971dd67b63cbf56
+%   Fondu   :
+%   Fondu_e : 
+%   Couper  : DONE 
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
