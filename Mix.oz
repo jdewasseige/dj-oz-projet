@@ -20,11 +20,11 @@ fun {Mix Interprete Music}
 	 end  
       [] renverser( Music ) then
 	 {Reverse {Mix Interprete Music}} 
-      [] repetition(nombre:N Music) then
+      [] repetition( nombre:N Music ) then
 	 {RepeteN N {Mix Interprete Music}}
-      [] repetition(duree:Secondes Music) then
+      [] repetition( duree:Secondes Music ) then
 	 {RepeteD Secondes {Mix Interprete Music}}
-      [] clip(bas:Bas haut:Haut Music) then
+      [] clip( bas:Bas haut:Haut Music ) then
 	 {Clip Bas Haut {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
@@ -59,23 +59,32 @@ fun {RepeteN N Vec}
 end
 
 
+% Gérer cas où Duree est un int, et où c'est négatif
 fun {RepeteD Duree Vec}
-   local DureeS L N R CompleteAcc in
-      DureeS = {FloatToInt Duree*44100.0}
+   local DureeF DureeS L N R CompleteAcc in
+      % Les cas où N n'est pas un float positif sont gérés
+      if {IsInt Duree} then DureeF = {Abs {IntToFloat Duree}}
+      else DureeF = {Abs Duree} end
+      DureeS = {FloatToInt DureeF*44100.0}
       L = {Length Vec}
       N = DureeS div L
       R = DureeS mod L
       fun {CompleteAcc Count Vec Acc}
-	 if Count == 0 then {Reverse Acc}
+	 if Count =< 0 then {Reverse Acc}
 	 else
 	    case Vec
-	    of nil then nil % J'AI MIS NIL AU HASARD
+	    of nil then {Reverse Acc} % ça ne devrait pas arriver si la
+	                              % fonction est correctement utilisée
 	    [] H|T then
 	       {CompleteAcc Count-1 T H|Acc}
 	    end
 	 end
       end
-      {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
+      if N == 0 then
+	 {CompleteAcc R Vec nil}
+      else
+	 {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
+      end
    end
 end
 
@@ -203,7 +212,6 @@ fun {Sum L1 L2}
       {SumOpt Lshort Lbig}
    end
 end
-
   
 
 
@@ -219,7 +227,7 @@ end
 % filtres
 %   Reverse : DONE OK
 %   RepeteN : DONE OK
-%   RepeteD : DONE
+%   RepeteD : DONE OK
 %   Clip    : DONE
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
@@ -236,4 +244,5 @@ Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
 Music6 = [ repetition(nombre:2 Music2) ]
 Music7 = [ renverser( Music2 ) ]
-{Browse {Mix Interprete Music6}}
+Music8 = [ repetition( duree:0.00015 Music2) ]
+%{Browse {Mix Interprete Music8}}
