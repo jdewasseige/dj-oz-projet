@@ -22,10 +22,16 @@ fun {Mix Interprete Music}
 	 {Reverse {Interprete Music}} 
       [] repetition(nombre:N Music) then
 	 {RepetitionN N {Mix Interprete Music}}
-      [] repetition(duree:Secondes Music) then
-	 {RepeteD Secondes {Mix Interprete Music}}
+      [] repetition(duree:Sec Music) then
+	 {RepeteD Sec {Mix Interprete Music}}
       [] clip(bas:Bas haut:Haut Music) then
 	 {Clip Bas Haut {Mix Interprete Music}}
+      [] echo(delai:Del Music) then
+	 {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
+      [] echo(delai:Del decadence:Dec Music) then
+	 {Mix Interpret [merge({Echo Del Dec 1 Music})}
+      [] echo(delai:Del decadence:Dec repetition:N Music) then
+	 {Mix Interpret [merge({Echo Del Dec N Music})]}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -92,6 +98,41 @@ fun {Clip Bas Haut Vec} % erreur si H < B ??
    end
 end
 
+
+fun {EchoDDR Del Dec Rep Music} % Del delai Dec decadence Rep repetition
+   local
+      C1 = {CalcFirstIntensity Dec Rep}
+      fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
+	 if R==0 then {Reverse Acc}
+	 else
+	    local Mus MusInt in
+	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
+	       MusInt = (C*Dec)#{Flatten Mus} % on calcule les intensite suivantes en les * a chaque iteration par d
+	       {ListsToMerge C*Dec Delai Dec Rep-1 Music Count+1 MusInt|Acc}
+	    end
+	 end
+      end
+   in
+     [{Append [C#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
+   end
+end
+
+% Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
+fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
+   local
+      fun {SumDec D R Count Acc}
+	 if R == 0 then Acc
+	 else
+	    {Sum D R-1 Count+1 Acc+{Pow D Count}}
+	 end
+      end
+   in
+      1.0 div (1.0 + {SumDec Dec Rep 1.0 0.0})
+   end
+end
+
+	 
+	 
 
 
 %%%%%%%%%%%
@@ -199,7 +240,7 @@ fun {Sum L1 L2}
    end
 end
 
-  
+
 
 
 
@@ -215,7 +256,8 @@ end
 %   Reverse : DONE
 %   RepeteN : DONE
 %   RepeteD : DONE
-%   Clip    : DONE
+%   Clip    : DONE
+%   Echo    : DONE
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
