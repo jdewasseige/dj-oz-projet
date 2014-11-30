@@ -22,6 +22,8 @@ fun {Mix Interprete Music}
 	 {Reverse {Interprete Music}} 
       [] repetition(nombre:N Music) then
 	 {RepetitionN N {Mix Interprete Music}}
+      [] repetition(duree:secondes Music) then
+	 {RepeteD secondes {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -47,6 +49,26 @@ fun {RepetitionN N Vec}
       in
 	 {Flatten {RepetitionNAcc N Vec Vec}} % on considere que si la musique est repetee 0 fois, alors on la joue une fois
       end
+   end
+end
+
+
+fun {RepeteD Duree Vec}
+   local DureeS L N R CompleteAcc in
+      DureeS = {FloatToInt Duree*44100.0}
+      L = {Length Vec}
+      N = DureeS div L
+      R = DureeS mod L
+      fun {CompleteAcc Count Vec Acc}
+	 if Count == 0 then {Reverse Acc}
+	 else
+	    case Vec
+	    [] H|T then
+	       {CompleteAcc Count-1 T H|Acc}
+	    end
+	 end
+      end
+      {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
    end
 end
 
