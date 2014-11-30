@@ -154,10 +154,10 @@ end
 
 %%%%%%%%%% TESTS %%%%%%%%%%%%
 declare
-%Partition2 = duree( secondes:24 b2)
+Partition2 = duree( secondes:24 b2)
 %{Browse {Interprete Partition2}}
-%Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
-%	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
+Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
+	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 %{Browse {Interprete [Partition1 muet(Partition1)]}}
 %{Browse {Interprete duree(secondes:0.001 [a2] )}}
 %{Browse {Interprete [a4 b2]}}
