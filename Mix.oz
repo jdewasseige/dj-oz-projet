@@ -19,9 +19,9 @@ fun {Mix Interprete Music}
 	    % by S, the sum of the factors
 	 end  
       [] renverser( Music ) then
-	 {Reverse {Interprete Music}} 
+	 {Reverse {Mix Interprete Music}} 
       [] repetition(nombre:N Music) then
-	 {RepetitionN N {Mix Interprete Music}}
+	 {RepeteN N {Mix Interprete Music}}
       [] repetition(duree:Secondes Music) then
 	 {RepeteD Secondes {Mix Interprete Music}}
       [] clip(bas:Bas haut:Haut Music) then
@@ -35,23 +35,24 @@ end
 %%%%%%%%%%%%%%%
 %%% FILTRES %%%
 %%%%%%%%%%%%%%%
-% reverse est deja implemente --'
 
-fun {RepetitionN N Vec}
-   local Nr in 
-      if {IsFloat N} then Nr = {FloatToInt N}
-      else Nr = N end
+fun {RepeteN N Vec}
+   local Nr in
+      % Les cas où N n'est pas un naturel sont gérés
+      if {IsFloat N} then Nr = {Abs {FloatToInt N}}
+      else Nr = {Abs N} end
       local
-	 fun {RepetitionNAcc N Vec Acc}
-	    if N == 0 then Acc
+	 fun {RepeteNAcc N Vec Acc}
+	    if N =< 0 then Acc
 	    else
-	       {RepetitionNAcc N-1 Vec Vec|Acc}
+	       {RepeteNAcc N-1 Vec Vec|Acc}
 	       % A ton avis c'est mieux de faire Append ici
-	       % et pas de Flatten en dessous ou pas?
+	       % et pas de Flatten en-dessous ou pas?
+	       % A mon avis Flatten sans Append c'est mieux.
 	    end
 	 end
       in
-	 {Flatten {RepetitionNAcc N Vec Vec}}
+	 {Flatten {RepeteNAcc N-1 Vec Vec}}
          % Si N = 0, on joue la musique une fois
       end
    end
@@ -74,7 +75,7 @@ fun {RepeteD Duree Vec}
 	    end
 	 end
       end
-      {Append {RepetitionN N Vec} {CompleteAcc R Vec nil}}
+      {Append {RepeteN N Vec} {CompleteAcc R Vec nil}}
    end
 end
 
@@ -216,10 +217,10 @@ end
 %   SumMatrix : DONE OK
 %   MergeHelper : DONE OK
 % filtres
-%   Reverse : DONE
-%   RepeteN : DONE
+%   Reverse : DONE OK
+%   RepeteN : DONE OK
 %   RepeteD : DONE
-%   Clip    : DONE
+%   Clip    : DONE
 
 %%%%%%%%% TESTS %%%%%%%%%%%%%%
 \insert 'Interprete.oz'
@@ -228,12 +229,11 @@ Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
 Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-{Browse {Mix Interprete Music2}}
+%{Browse {Mix Interprete Music2}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
 Music6 = [ repetition(nombre:2 Music2) ]
-{Browse {Mix Interprete Music6}}
-
-% TO DO : repetitionN le répète une fois de trop
+Music7 = [ renverser( Music2 ) ]
+{Browse {Mix Interprete Music7}}
