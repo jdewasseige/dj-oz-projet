@@ -29,7 +29,7 @@ fun {Mix Interprete Music}
       [] echo(delai:Del Music) then
 	 {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
       [] echo(delai:Del decadence:Dec Music) then
-	 {Mix Interpret [merge({Echo Del Dec 1 Music})}
+	 {Mix Interpret [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interpret [merge({Echo Del Dec N Music})]}
       else % Music est un filtre pas encore fait
