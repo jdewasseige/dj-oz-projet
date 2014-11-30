@@ -45,14 +45,14 @@ fun {RepeteN N Vec}
 	 fun {RepeteNAcc N Vec Acc}
 	    if N =< 0 then Acc
 	    else
-	       {RepeteNAcc N-1 Vec Vec|Acc}
+	       {RepeteNAcc N-1 Vec {Append Vec Acc}}
 	       % A ton avis c'est mieux de faire Append ici
 	       % et pas de Flatten en-dessous ou pas?
 	       % A mon avis Flatten sans Append c'est mieux.
 	    end
 	 end
       in
-	 {Flatten {RepeteNAcc N-1 Vec Vec}}
+	 {RepeteNAcc N-1 Vec Vec}
          % Si N = 0, on joue la musique une fois
       end
    end
@@ -236,4 +236,4 @@ Music5 = [ merge( MusicInt ) ]
 %{Browse {Mix Interprete Music5}}
 Music6 = [ repetition(nombre:2 Music2) ]
 Music7 = [ renverser( Music2 ) ]
-{Browse {Mix Interprete Music7}}
+{Browse {Mix Interprete Music6}}
