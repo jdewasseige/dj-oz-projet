@@ -32,7 +32,7 @@ fun {Mix Interprete Music}
 	 {Mix Interpret [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interpret [merge({Echo Del Dec N Music})]}
-      [] couper(debut:Debut fin:Fin Music}
+      [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
@@ -123,13 +123,13 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
 	 else
 	    local Mus MusInt in
 	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
-	       MusInt = (C*Dec)#{Flatten Mus} % on calcule les intensite suivantes en les * a chaque iteration par d
+	       MusInt = [(C*Dec)#{Flatten Mus}] % on calcule les intensite suivantes en les * a chaque iteration par d
 	       {ListsToMerge C*Dec Delai Dec Rep-1 Music Count+1 MusInt|Acc}
 	    end
 	 end
       end
    in
-     [{Append [C#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
+     {Append [C#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
    end
 end
 
@@ -153,18 +153,21 @@ fun {Couper Debut Fin Vec}
       Init = Debut*44100.0
       End  = Fin*44100.0
       L = {IntToFloat {Length Vec}}
-      fun {CouperAcc Init End L0 Vec Acc}
-	 if Init >= End then {Reverse Acc}
-	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init+1.0 End Vec 0.0|Acc}
-	 else
+      fun {CouperAcc Init End Count L0 Vec Acc}
+	 if Count >= End then {Reverse Acc}
+	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init End Count+1.0 L0 Vec 0.0|Acc}
+	 else  
 	    case Vec
-	    of nil then {CouperAcc Init+1.0 End Vec L0 0.0|Acc}
-	    [] H|T then {CouperAcc Init+1.0 End T H|Acc}
+	    of nil then {CouperAcc Init End Count+1.0 Vec L0 0.0|Acc}
+	    [] H|T then
+	       if Count < Init then {CouperAcc Init End Count+1.0 L0 T Acc}
+	       else {CouperAcc Init End Count+1.0 L0 T H|Acc}
+	       end
 	    end
 	 end
       end
    in
-      {CouperAcc Init End L Vec nil}
+      {CouperAcc Init End 1.0 L Vec nil}
    end
 end
 
@@ -297,8 +300,7 @@ end
 %   Echo    : DONE
 %   Fondu   :
 %   Fondu_e : 
-%   Couper  : DONE 
-=======
+%   Couper  : DONE
 
 
 %%%%%%%%%%%%%
