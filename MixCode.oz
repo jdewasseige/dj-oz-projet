@@ -1,4 +1,3 @@
-declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Mix Interprete Music}
    case Music
    of nil then nil
@@ -32,8 +31,6 @@ fun {Mix Interprete Music}
 	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interprete [merge({Echo Del Dec N Music})]}
-      [] fondu(ouverture:O fermeture:F Music) then
-	 {Fondu O F {Mix Interprete Music}}
       [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
@@ -121,55 +118,31 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
    local
       C1 = {CalcFirstIntensity Dec Rep}
       fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
-	 if Rep==0 then {Reverse Acc} 
+	 if Rep==0 then {Reverse Acc} % J'AI MIS REP AU HASARD
 	 else
 	    local Mus MusInt in
 	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
-	       MusInt = (C*Dec)#Mus % on calcule les intensite suivantes en les * a chaque iteration par d
-	       {ListsToMerge C*Dec Delai Dec Rep-1 Music Count+1.0 MusInt|Acc}
+	       MusInt = [(C*Dec)#{Flatten Mus}] % on calcule les intensite suivantes en les * a chaque iteration par d
+	       {ListsToMerge C*Dec Delai Dec Rep-1 Music Count+1 MusInt|Acc}
 	    end
 	 end
       end
    in
-      {Append [C1#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
+      [{Append [C1#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}]
    end
 end
 
 % Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
 fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
-   local SumDec Rr
-      if {IsFloat Rep} then Rr = {FloatToInt Rep}
-      else Rr = Rep end
+   local
       fun {SumDec D R Count Acc}
-	    if R == 0 then Acc
-	    else
-	       {SumDec D R-1 Count+1.0 Acc+{Pow D Count}}
-	    end
-      end
-   in
-      1.0 div (1.0 + {SumDec Dec Rr 1.0 0.0})
-   end
-end
-
-fun {Fondu Open Close Vec}
-   local 
-      OpenV = Open*44100.0
-      CloseV = FloatToInt Close*44100.0
-      L0 = {FloatToInt {Length Vec}}
-      fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
-	 case Vec
-	 of nil then {Reverse Acc}
-	 [] H|T then
-	    if Count < OpenV andthen Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*(L0-Count div CloseV)*H|Acc}
-	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*H|Acc}
-	    elseif Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (L0-Count div CloseV)*H|Acc}
-	    else
-	       {FonduAcc OpenV CloseV L0 Count+1.0 T H|Acc}
-	    end
+	 if R == 0 then Acc
+	 else
+	    {SumDec D R-1 Count+1 Acc+{Pow D Count}}
 	 end
       end
    in
-      {FonduAcc OpenV CloseV L0 0.0 Vec nil}
+      1.0 div (1.0 + {SumDec Dec Rep 1.0 0.0})
    end
 end
 
@@ -181,7 +154,7 @@ fun {Couper Debut Fin Vec}
       L = {IntToFloat {Length Vec}}
       fun {CouperAcc Init End Count L0 Vec Acc}
 	 if Count >= End then {Reverse Acc}
-	 elseif Count < 0.0 orelse Count > L0 then {CouperAcc Init End Count+1.0 L0 Vec 0.0|Acc}
+	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init End Count+1.0 L0 Vec 0.0|Acc}
 	 else  
 	    case Vec
 	    of nil then {CouperAcc Init End Count+1.0 Vec L0 0.0|Acc}
@@ -193,7 +166,7 @@ fun {Couper Debut Fin Vec}
 	 end
       end
    in
-      {CouperAcc Init End Init L Vec nil}
+      {CouperAcc Init End 1.0 L Vec nil}
    end
 end
 
@@ -304,54 +277,3 @@ fun {Sum L1 L2}
       {SumOpt Lshort Lbig}
    end
 end
-
-
-
-
-
-
-
-% partition() : DONE
-% voix() : DONE
-% merge() : DONE
-%   Sum : DONE OK
-%   SumMatrix : DONE OK
-%   MergeHelper : DONE OK
-% filtres
-%   Reverse : DONE OK
-%   RepeteN : DONE OK
-%   RepeteD : DONE OK
-%   Clip    : DONE OK
-%   Echo    : DONE
-%   Fondu   : DONE 
-%   Fondu_e : 
-%   Couper  : DONE
-
-
-%%%%%%%%%%%%%
-%%% TESTS %%%
-%%%%%%%%%%%%%
-\insert 'Interprete.oz' %/Users/john/dj-oz-projet/Interprete.oz
-declare
-Music0 = [ voix( [ echantillon( hauteur:0 duree:1.0 instrument:none) ] ) ]
-Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
-Music2bis = [ partition( duree(secondes:0.001 [a1 b2 c3] ) ) ]
-Music3 = partition (Partition1)
-Music4 = partition (Partition2)
-%{Browse {Mix Interprete Music2}}
-MusicInt = [(2.0#Music1) (60.0#Music2)]
-%{Browse {MergeHelper MusicInt nil 0.0}}
-Music5 = [ merge( MusicInt ) ]
-%{Browse {Mix Interprete Music5}}
-Music6 = [ renverser( Music2bis ) ]
-Music7 = [ repetition(nombre:2 Music2bis) ]
-Music8 = [ repetition( duree:0.00015 Music2) ]
-Music9 = [ clip(bas:~0.001 haut:0.009242 Music2bis) ]
-Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
-Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
-Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
-Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-{Browse {Mix Interprete Music13}}
-%{Browse {Mix Interprete Music8}}
-%{Browse {Mix Interprete Music0}}

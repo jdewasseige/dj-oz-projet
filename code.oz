@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD in
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre à votre système.
    CWD = {Property.condGet 'testcwd'
-	  '/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/'}
-	  %’/Users/John/dj-oz-projet/'}
+	  %'/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/'}
+	  '/Users/John/dj-oz-projet/'}
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -21,18 +21,15 @@ local Mix Interprete Projet CWD in
 
    local
       Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
+      ToNote GivesH Etirer Bourdon Transpose GivesDureeTot
+      RepeteN RepeteD Clip Echo CalcFirstIntensity Couper
+      MixVoix MixEch MergeHelper SumMatrix Sum
    in
       % Mix prends une musique et doit retourner un vecteur audio.
-      fun {Mix Interprete Music}
-	 Audio
-      end
+      \insert 'MixCode.oz' % /Users/John/dj-oz-projet/MixCode.oz
 
       % Interprete doit interpréter une partition
-      fun {Interprete Partition}
-	 nil
-	 % On fera \insert 'Interprete.oz' (comme un \input en latex)
-	 % Mais faudra remettre un peu en forme du coup
-      end
+      \insert 'InterpreteCode.oz' % /Users/John/dj-oz-projet/InterpreteCode.oz
    end
 
    local 
