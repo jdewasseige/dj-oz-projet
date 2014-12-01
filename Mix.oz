@@ -29,10 +29,10 @@ fun {Mix Interprete Music}
       [] echo(delai:Del Music) then
 	 {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
       [] echo(delai:Del decadence:Dec Music) then
-	 {Mix Interpret [merge({Echo Del Dec 1 Music})]}
+	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
-	 {Mix Interpret [merge({Echo Del Dec N Music})]}
-      [] couper(debut:Debut fin:Fin Music}
+	 {Mix Interprete [merge({Echo Del Dec N Music})]}
+      [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
@@ -119,7 +119,7 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
    local
       C1 = {CalcFirstIntensity Dec Rep}
       fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
-	 if R==0 then {Reverse Acc}
+	 if Rep==0 then {Reverse Acc} % J'AI MIS REP AU HASARD
 	 else
 	    local Mus MusInt in
 	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
@@ -129,7 +129,9 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
 	 end
       end
    in
-     [{Append [C#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
+      [{Append [C1#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}]
+       % J'AI RAJOUTE CI-DESSUS UN ] AU HASARD POUR QUE CA COMPILE
+       % IDEM POUR C1
    end
 end
 
@@ -139,7 +141,8 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
       fun {SumDec D R Count Acc}
 	 if R == 0 then Acc
 	 else
-	    {Sum D R-1 Count+1 Acc+{Pow D Count}}
+	    {SumDec D R-1 Count+1 Acc+{Pow D Count}}
+	    % J'AI MIS SUMDEC AU HASARD CI-DESSUS
 	 end
       end
    in
@@ -155,11 +158,13 @@ fun {Couper Debut Fin Vec}
       L = {IntToFloat {Length Vec}}
       fun {CouperAcc Init End L0 Vec Acc}
 	 if Init >= End then {Reverse Acc}
-	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init+1.0 End Vec 0.0|Acc}
+	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init+1.0 End nil Vec 0.0|Acc}
+	    % J'AI RAJOUTE NIL CI-DESSUS AU HASARD
 	 else
 	    case Vec
 	    of nil then {CouperAcc Init+1.0 End Vec L0 0.0|Acc}
-	    [] H|T then {CouperAcc Init+1.0 End T H|Acc}
+	    [] H|T then {CouperAcc Init+1.0 End T nil H|Acc}
+	       % J'AI RAJOUTE NIL CI-DESSUS AU HASARD
 	    end
 	 end
       end
@@ -298,7 +303,6 @@ end
 %   Fondu   :
 %   Fondu_e : 
 %   Couper  : DONE 
-=======
 
 
 %%%%%%%%%%%%%
@@ -318,4 +322,4 @@ Music5 = [ merge( MusicInt ) ]
 Music6 = [ repetition(nombre:2 Music2) ]
 Music7 = [ renverser( Music2 ) ]
 Music8 = [ repetition( duree:0.00015 Music2) ]
-%{Browse {Mix Interprete Music8}}
+{Browse {Mix Interprete Music6}}
