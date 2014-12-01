@@ -178,34 +178,33 @@ end
 %%%%%%%%%%%
 %%% MIX %%% 
 %%%%%%%%%%%
-
 fun {MixVoix Voix}
-   local F N in
+   local F N K Pi in
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
 	 N = {FloatToInt D*44100.0}
-	 F = 0.0
-	 {Flatten {MixEch F 1 N}|{MixVoix Rest}}
+	 K = 0.0
+	 {Flatten {MixEch K 1 N}|{MixVoix Rest}}
       [] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
-	 {Flatten {MixEch F 1 N}|{MixVoix Rest}}
+	 Pi = 3.14159
+	 K = 2.0*Pi*F/44100.0
+	 {MixEch K 1 N}|{MixVoix Rest}
       end
    end
 end
 
 
-fun {MixEch F I Max}
-   local K Pi in
-      Pi = 3.14159
-      K = 2.0*Pi*F/44100.0
-      if I > Max then nil
-      else
-	 0.5*{Sin K*{IntToFloat I}}|{MixEch F I+1 Max}
-      end
+fun {MixEch K I Max}
+   if I > Max then nil
+   else
+      0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
    end
 end
+
+
 
 %%%%%%%%%%%%%
 %%% MERGE %%%
@@ -306,8 +305,9 @@ end
 %%%%%%%%%%%%%
 %%% TESTS %%%
 %%%%%%%%%%%%%
-\insert '/Users/john/dj-oz-projet/Interprete.oz'
+\insert 'Interprete.oz'
 declare
+Music0 = [ voix( [ echantillon( hauteur:0 duree:1.0 instrument:none) ] ) ]
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
 Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music3 = partition (Partition1)
@@ -320,4 +320,4 @@ Music5 = [ merge( MusicInt ) ]
 Music6 = [ repetition(nombre:2 Music2) ]
 Music7 = [ renverser( Music2 ) ]
 Music8 = [ repetition( duree:0.00015 Music2) ]
-{Browse {Mix Interprete Music6}}
+{Browse {Mix Interprete Music0}}
