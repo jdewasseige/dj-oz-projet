@@ -1,4 +1,9 @@
 declare % /!\ ne pas oublier d’enlever ‘declare’
+
+proc {Assert Cond Exception}
+   if {Not Cond} then raise Exception end end
+end
+
 fun {Interprete Partition}
    case Partition
    of nil then nil

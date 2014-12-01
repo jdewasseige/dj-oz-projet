@@ -32,10 +32,12 @@ fun {Mix Interprete Music}
 	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interprete [merge({Echo Del Dec N Music})]}
-      [] fondu(ouverture:O fermeture:F Music) then
-	 {Fondu O F {Mix Interprete Music}}
+      [] fondu( ouverture:Ouv fermeture:Fer Music ) then
+	 {Fondu Ouv Fer {Mix Interprete Music}}
+      [] fondu_enchaine( duree:D M1 M2 ) then
+	 {FonduE D {Mix Interprete M1} {Mix Interprete M2}}
       [] couper(debut:Debut fin:Fin Music) then
-	 {Couper Debut Fin {Mix Interprete Music}}
+	 {Couper Debut Fin {Mix Interprete Music}}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -135,6 +137,7 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
    end
 end
 
+
 % Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
 fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
    local SumDec Rr
@@ -151,11 +154,16 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
    end
 end
 
+
+% {Assert Ouv=<L 'L\'ouverture est plus longue que la musique'}
+% Ouv*44100 ... int float ...
+% Add robustesse si Open ou Close int
+%declare
 fun {Fondu Open Close Vec}
    local 
       OpenV = Open*44100.0
-      CloseV = FloatToInt Close*44100.0
-      L0 = {FloatToInt {Length Vec}}
+      CloseV = {FloatToInt Close*44100.0}
+      L0 = {IntToFloat {Length Vec}}
       fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
@@ -172,6 +180,8 @@ fun {Fondu Open Close Vec}
       {FonduAcc OpenV CloseV L0 0.0 Vec nil}
    end
 end
+%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
+%{Browse {Fondu 0.000025 0.000025 Music1}}
 
 
 fun {Couper Debut Fin Vec}
@@ -196,6 +206,7 @@ fun {Couper Debut Fin Vec}
       {CouperAcc Init End Init L Vec nil}
    end
 end
+
 
 
    
@@ -311,7 +322,7 @@ end
 
 
 
-% partition() : DONE
+% partition() : DONE OK
 % voix() : DONE
 % merge() : DONE
 %   Sum : DONE OK
