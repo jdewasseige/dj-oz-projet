@@ -22,18 +22,14 @@ local Mix Interprete Projet CWD in
    local
       Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
       ToNote GivesH Etirer Bourdon Transpose GivesDureeTot
+      RepeteN RepeteD Clip Echo CalcFirstIntensity Couper
+      MixVoix MixEch MergeHelper SumMatrix Sum
    in
       % Mix prends une musique et doit retourner un vecteur audio.
-      fun {Mix Interprete Music}
-	 Audio
-      end
+      \insert 'MixCode.oz'
 
       % Interprete doit interpréter une partition
-      fun {Interprete Partition}
-	 \insert 'Interprete2.oz'
-	 % On fera \insert 'Interprete.oz' (comme un \input en latex)
-	 % Mais faudra remettre un peu en forme du coup
-      end
+      \insert 'InterpreteCode.oz'
    end
 
    local 
