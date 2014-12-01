@@ -29,9 +29,9 @@ fun {Mix Interprete Music}
       [] echo(delai:Del Music) then
 	 {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
       [] echo(delai:Del decadence:Dec Music) then
-	 {Mix Interpret [merge({Echo Del Dec 1 Music})]}
+	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
-	 {Mix Interpret [merge({Echo Del Dec N Music})]}
+	 {Mix Interprete [merge({Echo Del Dec N Music})]}
       [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
@@ -119,7 +119,7 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
    local
       C1 = {CalcFirstIntensity Dec Rep}
       fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
-	 if R==0 then {Reverse Acc}
+	 if Rep==0 then {Reverse Acc} % J'AI MIS REP AU HASARD
 	 else
 	    local Mus MusInt in
 	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
@@ -129,7 +129,7 @@ fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
 	 end
       end
    in
-     {Append [C#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}
+      [{Append [C1#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}]
    end
 end
 
@@ -139,7 +139,7 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
       fun {SumDec D R Count Acc}
 	 if R == 0 then Acc
 	 else
-	    {Sum D R-1 Count+1 Acc+{Pow D Count}}
+	    {SumDec D R-1 Count+1 Acc+{Pow D Count}}
 	 end
       end
    in
@@ -306,7 +306,7 @@ end
 %%%%%%%%%%%%%
 %%% TESTS %%%
 %%%%%%%%%%%%%
-\insert 'Interprete.oz'
+\insert '/Users/john/dj-oz-projet/Interprete.oz'
 declare
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
 Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
@@ -320,4 +320,4 @@ Music5 = [ merge( MusicInt ) ]
 Music6 = [ repetition(nombre:2 Music2) ]
 Music7 = [ renverser( Music2 ) ]
 Music8 = [ repetition( duree:0.00015 Music2) ]
-%{Browse {Mix Interprete Music8}}
+{Browse {Mix Interprete Music6}}
