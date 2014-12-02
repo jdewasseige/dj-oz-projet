@@ -155,15 +155,18 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
 end
 
 
-% {Assert Ouv=<L 'L\'ouverture est plus longue que la musique'}
-% Ouv*44100 ... int float ...
 % Add robustesse si Open ou Close int
 %declare
+%proc {Assert Cond Exception}
+%   if {Not Cond} then raise Exception end end
+%end
 fun {Fondu Open Close Vec}
    local 
       OpenV = Open*44100.0
       CloseV = Close*44100.0
       L0 = {IntToFloat {Length Vec}}
+      {Assert OpenV<L0 'L\'ouverture est plus longue que la musique'}
+      {Assert CloseV<L0 'La fermeture est plus longue que la musique'}
       fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
@@ -184,6 +187,7 @@ end
 %Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0004 instrument:none) ] ) ]
 %Audio1 = {Mix Interprete Music1}
 %{Browse Audio1}
+%{Browse {Fondu 0.1 0.03 Audio1}}
 %{Browse {Fondu 0.000025 0.0003 Audio1}}
 
 
