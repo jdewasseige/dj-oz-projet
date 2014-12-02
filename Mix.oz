@@ -168,9 +168,10 @@ fun {Fondu Open Close Vec}
 	 case Vec
 	 of nil then {Reverse Acc}
 	 [] H|T then
-	    if Count < OpenV andthen Count > L0-CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count/OpenV)*(L0-Count/CloseV)*H|Acc}
-	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count/OpenV)*H|Acc}
-	    elseif Count > L0-CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (L0-Count/CloseV)*H|Acc}
+	    if Count < OpenV andthen Count > L0-CloseV then
+	       {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*((L0-Count) / CloseV)*H|Acc}
+	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*H|Acc}
+	    elseif Count > L0-CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T ((L0-Count) / CloseV)*H|Acc}
 	    else
 	       {FonduAcc OpenV CloseV L0 Count+1.0 T H|Acc}
 	    end
@@ -180,8 +181,10 @@ fun {Fondu Open Close Vec}
       {FonduAcc OpenV CloseV L0 1.0 Vec nil}
    end
 end
-%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-%{Browse {Fondu 0.000025 0.000025 Music1}}
+%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0004 instrument:none) ] ) ]
+%Audio1 = {Mix Interprete Music1}
+%{Browse Audio1}
+%{Browse {Fondu 0.000025 0.0003 Audio1}}
 
 
 fun {Couper Debut Fin Vec}
