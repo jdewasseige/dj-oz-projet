@@ -9,6 +9,9 @@ l’autre de mixer et transformer une ou plusieurs musiques.
 
 TO DO :
 ———————
+Reminder :
+* \’
+
 
 Code :
 * Interprete : DONE
