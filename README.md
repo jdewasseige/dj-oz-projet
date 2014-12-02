@@ -18,10 +18,10 @@ Code :
 * Mix :
 	* voix() : Tests
 	* merge() : Tests
-	* Fondu : Tests hardores
+	* Fondu : Tests hardores DONE
 	* Echo : Tests
 	* Couper : Tests
-	* FonduE :
+	* FonduE : Code + tests DONE
 * Extensions
     * Lissage :
     * Instruments
@@ -34,8 +34,9 @@ Code :
 * Perfectionnisme :
 	* Asserts
 	* Robustesse float int
-	* Variables globales beauté lisibilité
+	* Variables globales beauté lisibilité COMPRIS (environnement contextuel) (voir Fondu et FonduE)
 	* Commenter
 	* Normes, unifier noms
+	* Optimisation
 
 

@@ -34,8 +34,8 @@ fun {Mix Interprete Music}
 	 {Mix Interprete [merge({Echo Del Dec N Music})]}
       [] fondu( ouverture:Ouv fermeture:Fer Music ) then
 	 {Fondu Ouv Fer {Mix Interprete Music}}
-      %[] fondu_enchaine( duree:D M1 M2 ) then
-	 %{FonduE D {Mix Interprete M1} {Mix Interprete M2}}
+      [] fondu_enchaine( duree:Duree Music1 Music2 ) then
+	 {FonduE Duree {Mix Interprete Music1} {Mix Interprete Music2}}
       [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
@@ -155,40 +155,84 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
 end
 
 
-% Add robustesse si Open ou Close int
 %declare
 %proc {Assert Cond Exception}
 %   if {Not Cond} then raise Exception end end
 %end
 fun {Fondu Open Close Vec}
-   local 
-      OpenV = Open*44100.0
-      CloseV = Close*44100.0
+   local OpenV CloseV L0 FonduAcc in
+      if {IsInt Open} then OpenV = {IntToFloat Open}*44100.0
+      else OpenV = Open*44100.0 end
+      if {IsInt Close} then CloseV = {IntToFloat Close}*44100.0
+      else CloseV = Close*44100.0 end
       L0 = {IntToFloat {Length Vec}}
       {Assert OpenV<L0 'L\'ouverture est plus longue que la musique'}
       {Assert CloseV<L0 'La fermeture est plus longue que la musique'}
-      fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
+      fun {FonduAcc Count Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
 	 [] H|T then
 	    if Count < OpenV andthen Count > L0-CloseV then
-	       {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*((L0-Count) / CloseV)*H|Acc}
-	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*H|Acc}
-	    elseif Count > L0-CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T ((L0-Count) / CloseV)*H|Acc}
+	       {FonduAcc Count+1.0 T (Count / OpenV)*((L0-Count) / CloseV)*H|Acc}
+	    elseif Count < OpenV then {FonduAcc Count+1.0 T (Count / OpenV)*H|Acc}
+	    elseif Count > L0-CloseV then {FonduAcc Count+1.0 T ((L0-Count) / CloseV)*H|Acc}
 	    else
-	       {FonduAcc OpenV CloseV L0 Count+1.0 T H|Acc}
+	       {FonduAcc Count+1.0 T H|Acc}
 	    end
 	 end
       end
-   in
-      {FonduAcc OpenV CloseV L0 1.0 Vec nil}
+      {FonduAcc 1.0 Vec nil}
    end
 end
+%Vec1 = [1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0]
+%Vec2 = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0]
+%Vec3 = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+%Vec4 = {Append Vec2 Vec2}
+%{Browse {Fondu 0.0003 0.0001 Vec4}}
 %Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0004 instrument:none) ] ) ]
 %Audio1 = {Mix Interprete Music1}
 %{Browse Audio1}
 %{Browse {Fondu 0.1 0.03 Audio1}}
 %{Browse {Fondu 0.000025 0.0003 Audio1}}
+
+
+%declare
+%proc {Assert Cond Exception}
+%   if {Not Cond} then raise Exception end end
+%end
+fun {FonduE Duree Vec1 Vec2}
+   local DureeV L1 L2 FonduEAcc in
+      if {IsInt Duree} then DureeV = {IntToFloat Duree}*44100.0
+      else DureeV = Duree*44100.0 end
+      L1 = {IntToFloat {Length Vec1}}
+      L2 = {IntToFloat {Length Vec2}}
+      {Assert DureeV<L1 'La durée du fondu est plus longue que la musique 1'}
+      {Assert DureeV<L2 'La durée du fondu est plus longue que la musique 2'}
+      fun {FonduEAcc Count V1 V2 Acc}
+	 if Count<L1-DureeV then % Avant fondu
+	    {FonduEAcc Count+1.0 V1.2 V2 V1.1|Acc}
+	 else
+	    case V1
+	    of nil then
+	       case V2
+	       of nil then % Fin
+		  {Reverse Acc}
+	       [] H|T then % Après fondu
+		  {FonduEAcc Count+1.0 nil T H|Acc}
+	       end
+	    [] H|T then % Dans fondu
+	       {FonduEAcc Count+1.0 T V2.2
+		((H*(L1-Count) + V2.1*(Count+DureeV-L1))/DureeV)|Acc}
+	    end
+	 end
+      end
+      {FonduEAcc 1.0 Vec1 Vec2 nil}
+   end
+end
+%Vec1 = [1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0]
+%Vec2 = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0]
+%Vec3 = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+%{Browse {FonduE 0.0002 Vec3 Vec2}}
 
 
 fun {Couper Debut Fin Vec}
@@ -341,7 +385,7 @@ end
 %   RepeteD : DONE OK
 %   Clip    : DONE OK
 %   Echo    : DONE
-%   Fondu   : DONE OK rajouter des tests hardcore (+ assert)
+%   Fondu   : DONE OK rajouter des tests hardcore
 %   Fondu_e : 
 %   Couper  : DONE
 
