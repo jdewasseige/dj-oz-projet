@@ -35,9 +35,10 @@ fun {Mix Interprete Music}
       [] fondu( ouverture:Ouv fermeture:Fer Music ) then
 	 {Fondu Ouv Fer {Mix Interprete Music}}
       [] fondu_enchaine( duree:D M1 M2 ) then
-	 {FonduE D {Mix Interprete M1} {Mix Interprete M2}}
+	 nil
+	 %{FonduE D {Mix Interprete M1} {Mix Interprete M2}}
       [] couper(debut:Debut fin:Fin Music) then
-	 {Couper Debut Fin {Mix Interprete Music}}}
+	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
 	 nil
       end
@@ -162,15 +163,16 @@ end
 fun {Fondu Open Close Vec}
    local 
       OpenV = Open*44100.0
-      CloseV = {FloatToInt Close*44100.0}
+      CloseV = Close*44100.0
       L0 = {IntToFloat {Length Vec}}
       fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
 	 [] H|T then
-	    if Count < OpenV andthen Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*(L0-Count div CloseV)*H|Acc}
-	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*H|Acc}
-	    elseif Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (L0-Count div CloseV)*H|Acc}
+	    if Count < OpenV andthen Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*(L0-Count / CloseV)*H|Acc}
+	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count / OpenV)*H|Acc}
+	    elseif Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T ((L0-Count) / CloseV)*H|Acc}
+	    % JOHN j'ai remplacé tous tes 'div' par des '/' c'est bien ça qu'il fallait ?
 	    else
 	       {FonduAcc OpenV CloseV L0 Count+1.0 T H|Acc}
 	    end
@@ -180,8 +182,10 @@ fun {Fondu Open Close Vec}
       {FonduAcc OpenV CloseV L0 0.0 Vec nil}
    end
 end
-%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
-%{Browse {Fondu 0.000025 0.000025 Music1}}
+%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0004 instrument:none) ] ) ]
+%Audio1 = {Mix Interprete Music1}
+%{Browse Audio1}
+%{Browse {Fondu 0.000025 0.000025 Audio1}}
 
 
 fun {Couper Debut Fin Vec}
@@ -363,6 +367,6 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-{Browse {Mix Interprete Music13}}
+%{Browse {Mix Interprete Music13}}
 %{Browse {Mix Interprete Music8}}
 %{Browse {Mix Interprete Music0}}
