@@ -11,7 +11,10 @@ TO DO :
 -------
 Reminder :
 * \’
+* mettre un signe à coté des commentaires qu'on doit supprimer
 
+Just done :
+* asserts + vérifier nombres réels et entiers
 
 Code :
 * Interprete : DONE
