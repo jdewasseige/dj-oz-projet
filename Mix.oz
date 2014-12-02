@@ -138,7 +138,7 @@ end
 % Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
 fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
    local SumDec Rr
-      if {IsFloat Rep} then Rr = {FloatToInt Rep}
+      if {IsFloat Rep} then Rr = {FloatToInt Rep} % peut etre pas necessaire
       else Rr = Rep end
       fun {SumDec D R Count Acc}
 	    if R == 0 then Acc
@@ -147,22 +147,22 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
 	    end
       end
    in
-      1.0 div (1.0 + {SumDec Dec Rr 1.0 0.0})
+      1.0/(1.0 + {SumDec Dec Rr 1.0 0.0})
    end
 end
 
 fun {Fondu Open Close Vec}
    local 
       OpenV = Open*44100.0
-      CloseV = FloatToInt Close*44100.0
-      L0 = {FloatToInt {Length Vec}}
+      CloseV = Close*44100.0
+      L0 = {IntToFloat {Length Vec}}
       fun {FonduAcc OpenV CloseV L0 Count Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
 	 [] H|T then
-	    if Count < OpenV andthen Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*(L0-Count div CloseV)*H|Acc}
-	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count div OpenV)*H|Acc}
-	    elseif Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (L0-Count div CloseV)*H|Acc}
+	    if Count < OpenV andthen Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count/OpenV)*(L0-Count/CloseV)*H|Acc}
+	    elseif Count < OpenV then {FonduAcc OpenV CloseV L0 Count+1.0 T (Count/OpenV)*H|Acc}
+	    elseif Count > CloseV then {FonduAcc OpenV CloseV L0 Count+1.0 T (L0-Count/CloseV)*H|Acc}
 	    else
 	       {FonduAcc OpenV CloseV L0 Count+1.0 T H|Acc}
 	    end
