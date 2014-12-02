@@ -8,7 +8,7 @@ L’une sera capable de transformer une partition musicale en un fichier audio e
 l’autre de mixer et transformer une ou plusieurs musiques.
 
 TO DO :
-———————
+=======
 Reminder :
 * \’
 
