@@ -33,7 +33,7 @@ Code :
        * Couper/Fondu du vecteur audio pour qu'il correspondent à la durée de la note :
     * Créativité
     * Effets complexes
-* Partition Lord of the Rings
+* Partition Lord of the Rings OU Let It Go
 * Perfectionnisme :
 	* Asserts
 	* Robustesse float int
