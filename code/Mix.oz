@@ -234,7 +234,7 @@ end
 
 
 fun {Couper Debut Fin Vec}
-   local Init End L0
+   local Init End L0 CouperAcc in
       Init = Debut*44100.0
       End  = Fin*44100.0
       L0 = {IntToFloat {Length Vec}}
