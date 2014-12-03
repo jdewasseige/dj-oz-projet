@@ -126,7 +126,7 @@ fun {Echo DelN Dec RepN Music} % Del delai Dec decadence Rep repetition
 	 if Rep==0 then {Reverse Acc} 
 	 else
 	    local Mus MusInt in
-	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
+	       Mus = [voix([silence(duree:(Del*Count))]) Music] % Delai c'est Del ????
 	       MusInt = (C*Dec)#Mus % on calcule les intensite suivantes en les * a chaque iteration par d
 	       {ListsToMerge C*Dec Rep-1 Count+1.0 MusInt|Acc}
 	    end
@@ -264,7 +264,9 @@ end
 %%% MIX %%% 
 %%%%%%%%%%%
 fun {MixVoix Voix}
-   local F N K Pi in
+   local F N K Pi FactLissage in
+      Pi = 3.14159
+      FactLissage = 0.2
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
@@ -274,9 +276,9 @@ fun {MixVoix Voix}
       [] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
-	 Pi = 3.14159
 	 K = 2.0*Pi*F/44100.0
-	 {MixEch K 1 N}|{MixVoix Rest}
+	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
+	 % Ce fondu lisse chaque note
       end
    end
 end
@@ -390,7 +392,7 @@ end
 %%%%%%%%%%%%%
 %%% TESTS %%%
 %%%%%%%%%%%%%
-\insert '/Users/john/dj-oz-projet/code/Interprete.oz' %/Users/john/dj-oz-projet/code/Interprete.oz
+\insert 'Interprete.oz' %/Users/john/dj-oz-projet/code/Interprete.oz
 declare
 Music0 = [ voix( [ echantillon( hauteur:0 duree:1.0 instrument:none) ] ) ]
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
@@ -398,7 +400,7 @@ Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music2bis = [ partition( duree(secondes:0.001 [a1 b2 c3] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-%{Browse {Mix Interprete Music2}}
+{Browse {Mix Interprete Music2}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
@@ -411,6 +413,6 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-{Browse {Mix Interprete Music9}}
+%{Browse {Mix Interprete Music9}}
 %{Browse {Mix Interprete Music8}}
 %{Browse {Mix Interprete Music0}}
