@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD in
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre à votre système.
    CWD = {Property.condGet 'testcwd'
-	  '/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/code/'}
-	  %'/Users/John/dj-oz-projet/code/'}
+	  '/Users/John/dj-oz-projet/code/'}
+	  %'/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/code/'}
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -27,10 +27,10 @@ local Mix Interprete Projet CWD in
       Assert DivideVectors
    in
       % Mix prends une musique et doit retourner un vecteur audio.
-      \insert 'MixCode.oz' % /Users/John/dj-oz-projet/MixCode.oz
+      \insert 'MixCode.oz' % /Users/John/dj-oz-projet/code/MixCode.oz
 
       % Interprete doit interpréter une partition
-      \insert 'InterpreteCode.oz' % /Users/John/dj-oz-projet/InterpreteCode.oz
+      \insert 'InterpreteCode.oz' % /Users/John/dj-oz-projet/code/InterpreteCode.oz
    end
 
    local
@@ -43,7 +43,8 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-      {Browse {Projet.run Mix Interprete Music CWD#'outPirate.wav'}}
+
+      {Browse {Projet.run Mix Interprete Music CWD#'out42.wav'}}
       {Browse {VirtualString.toAtom 'temps ecoule: '#{Time.time}-Tbegin#' secondes'}}
    end
 end

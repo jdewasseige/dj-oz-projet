@@ -271,8 +271,7 @@ fun {MixVoix Voix}
       of nil then nil
       [] silence(duree:D)|Rest then
 	 N = {FloatToInt D*44100.0}
-	 K = 0.0
-	 {Flatten {MixEch K 1 N}|{MixVoix Rest}}
+	 {Flatten {MixSilence 1 N}|{MixVoix Rest}}
       [] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
@@ -283,6 +282,12 @@ fun {MixVoix Voix}
    end
 end
 
+fun {MixSilence I Max}
+   if I > Max then nil
+   else
+      0.0|{MixSilence I+1 Max}
+   end
+end
 
 fun {MixEch K I Max}
    if I > Max then nil
@@ -290,6 +295,7 @@ fun {MixEch K I Max}
       0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
    end
 end
+
 
 
 
@@ -398,7 +404,7 @@ end
 %%%%%%%%%%%%%
 %%% TESTS %%%
 %%%%%%%%%%%%%
-\insert 'Interprete.oz' %/Users/john/dj-oz-projet/code/Interprete.oz
+\insert 'Interprete.oz' % /Users/john/dj-oz-projet/code/Interprete.oz
 declare
 Music0 = [ voix( [ echantillon( hauteur:0 duree:1.0 instrument:none) ] ) ]
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
@@ -419,6 +425,6 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-%{Browse {Mix Interprete Music9}}
+%{Browse {Mix Interprete Music2bis}}
 %{Browse {Mix Interprete Music8}}
 %{Browse {Mix Interprete Music0}}

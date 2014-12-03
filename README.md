@@ -12,6 +12,9 @@ TO DO :
 Reminder :
 * \’
 * mettre un signe à coté des commentaires qu'on doit supprimer
+* ne pas oublier de vérifier que les fonctions déclarées dans code.oz correspondent à celles de interprete et mix (même si cela semble évident)
+* vérifier ECHO 
+* meilleurs commentaires dans le code
 
 Just done :
 * asserts + vérifier nombres réels et entiers
@@ -33,7 +36,7 @@ Code :
        * Couper/Fondu du vecteur audio pour qu'il correspondent à la durée de la note :
     * Créativité
     * Effets complexes
-* Partition Lord of the Rings
+* Partition Lord of the Rings OU Let It Go
 * Perfectionnisme :
 	* Asserts
 	* Robustesse float int
