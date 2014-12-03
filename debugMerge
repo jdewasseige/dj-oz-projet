@@ -1,0 +1,92 @@
+%%%%%%%%%%%%%
+%%% MERGE %%%
+%%%%%%%%%%%%%
+declare
+fun {Mix Music}
+   case Music
+   of nil then nil
+   []  merge( MusicInt )|Rest then
+      case {MergeHelper MusicInt nil 0.0}
+      of values(audiosMatrix:M sumF:S) then
+	 {Flatten {List.map {SumMatrix M nil} fun {$ N} N/S end}|{Mix Rest}}
+	    % This line adds up the audios and divides them
+	    % by S, the sum of the factors
+      end
+   [] L|Rest then
+      {Flatten L|{Mix Rest}}
+   end
+end
+
+
+fun {MergeHelper MusicInt M S}
+   % Petit mot d'explication sur M :
+   % C'est un vecteur contenant les vecteurs audios calculés
+   % jusqu'à présent. C'est un vecteur de vecteurs, on peut donc
+   % le voir comme une matrice.
+   case MusicInt
+   of nil then values(audiosMatrix:M sumF:S)
+   [] (F#Music)|Rest then % selon moi ça marche avec et sans les ()
+                          % autour de F#Music, une préférence ?
+      local Fr in
+	 % Pour la robustesse
+	 if {IsInt F} then Fr = {IntToFloat F}
+	 else Fr = F end
+	 { MergeHelper Rest
+	   {List.map Music fun {$ N} Fr*N end}|M 
+	   S+Fr }
+      % Cette ligne incompréhensible appelle MergeHelper avec Rest
+      % comme MusicInt, en adjoignant à M le vecteur audio
+      % correspondant à Music multiplié par Fr (c'est le rôle de
+      % List.map) et en additionnant Fr à S.
+      end
+   end
+end
+
+
+fun {SumMatrix M Acc}
+   % blabla description
+   case M
+   of nil then Acc
+   [] Vec|Rest then
+      {SumMatrix Rest {Sum Acc Vec}}
+   end
+end
+
+
+fun {Sum L1 L2}
+   % This function adds up the elements of the lists L1 and L2
+   % one by one. If they don't have the same length, the one
+   % with smaller length is extended with zeros.
+   local Lbig Lshort
+      if {Length L1} > {Length L2} then
+	 Lbig = L1
+	 Lshort = L2
+      else
+	 Lbig = L2
+	 Lshort = L1
+      end
+      fun {SumOpt Lshort Lbig}
+	 case Lshort
+	 of nil then
+	    case Lbig
+	    of nil then nil
+	    [] Hb|Tb then
+	       Hb|{SumOpt nil Tb}
+	    end
+	 [] Hs|Ts then
+	    (Hs+Lbig.1)|{SumOpt Ts Lbig.2}
+	 end
+      end
+   in
+      {SumOpt Lshort Lbig}
+   end
+end
+
+M1 = [1.0 1.0 1.0 1.0]
+M2 = [0.5 0.5]
+M3 = [1.0 1.0 1.0 1.0 1.0 1.0]
+MusicInt = [ (0.5#M1)  (1.0#M2)  (0.5#M3) ]
+Morc1 = merge( MusicInt )
+Morc2 = M1
+Music = [Morc1 Morc2]
+{Browse {Mix Music}}
