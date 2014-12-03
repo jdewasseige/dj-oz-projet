@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD in
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre à votre système.
    CWD = {Property.condGet 'testcwd'
-	  %'/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/'}
-	  '/Users/John/dj-oz-projet/'}
+	  '/Users/Antoine/Dropbox/FSA12BA/Q3/Info_2/dj-oz-projet/code/'}
+	  %'/Users/John/dj-oz-projet/code/'}
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -23,7 +23,7 @@ local Mix Interprete Projet CWD in
       Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
       ToNote GivesH Etirer Bourdon Transpose GivesDureeTot
       RepeteN RepeteD Clip Echo CalcFirstIntensity Couper
-      MixVoix MixEch MergeHelper SumMatrix Sum
+      MixVoix MixEch MergeHelper SumMatrix Sum Fondu FonduE
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       \insert 'MixCode.oz' % /Users/John/dj-oz-projet/MixCode.oz

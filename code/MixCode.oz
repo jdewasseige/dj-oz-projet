@@ -31,6 +31,10 @@ fun {Mix Interprete Music}
 	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
       [] echo(delai:Del decadence:Dec repetition:N Music) then
 	 {Mix Interprete [merge({Echo Del Dec N Music})]}
+      [] fondu( ouverture:Ouv fermeture:Fer Music ) then
+	 {Fondu Ouv Fer {Mix Interprete Music}}
+      [] fondu_enchaine( duree:Duree Music1 Music2 ) then
+	 {FonduE Duree {Mix Interprete Music1} {Mix Interprete Music2}}
       [] couper(debut:Debut fin:Fin Music) then
 	 {Couper Debut Fin {Mix Interprete Music}}
       else % Music est un filtre pas encore fait
@@ -45,17 +49,14 @@ end
 
 fun {RepeteN N Vec}
    local Nr in
-      % Les cas où N n'est pas un naturel sont gérés
+      % Les cas où N n'est pas un naturel positif sont gérés
       if {IsFloat N} then Nr = {Abs {FloatToInt N}}
       else Nr = {Abs N} end
       local
 	 fun {RepeteNAcc N Vec Acc}
-	    if N =< 0 then Acc
+	    if N == 0 then Acc
 	    else
 	       {RepeteNAcc N-1 Vec {Append Vec Acc}}
-	       % A ton avis c'est mieux de faire Append ici
-	       % et pas de Flatten en-dessous ou pas?
-	       % A mon avis Flatten sans Append c'est mieux.
 	    end
 	 end
       in
@@ -77,11 +78,10 @@ fun {RepeteD Duree Vec}
       N = DureeS div L
       R = DureeS mod L
       fun {CompleteAcc Count Vec Acc}
-	 if Count =< 0 then {Reverse Acc}
+	 if Count == 0 then {Reverse Acc} 
 	 else
 	    case Vec
-	    of nil then {Reverse Acc} % ça ne devrait pas arriver si la
-	                              % fonction est correctement utilisée
+	    of nil then {Reverse Acc} % ça ne devrait pas arriver si la fonction est correctement utilisée
 	    [] H|T then
 	       {CompleteAcc Count-1 T H|Acc}
 	    end
@@ -96,79 +96,164 @@ fun {RepeteD Duree Vec}
 end
 
 
-fun {Clip Bas Haut Vec} % erreur si H < B ??
-   local
-      fun {ClipAcc Bas Haut Vec Acc}
+fun {Clip Bas Haut Vec}
+   {Assert Bas=<Haut 'CLIP : $bas est inférieur à $haut'}
+   local ClipAcc in
+      fun {ClipAcc Vec Acc}
 	 case Vec
 	 of nil then {Reverse Acc}
 	 [] H|T then
-	    if H < Bas then {ClipAcc Bas Haut T Bas|Acc}
-	    elseif H > Haut then {ClipAcc Bas Haut T Haut|Acc} % J'AI MIS T AU HASARD
-	    else {ClipAcc Bas Haut T H|Acc}  % J'AI MIS T AU HASARD
+	    if H < Bas then {ClipAcc T Bas|Acc}
+	    elseif H > Haut then {ClipAcc T Haut|Acc} 
+	    else {ClipAcc T H|Acc} 
 	    end
 	 end
       end
-   in
-      {ClipAcc Bas Haut Vec nil}
+      {ClipAcc Vec nil}
    end
 end
 
 
-fun {Echo Del Dec Rep Music} % Del delai Dec decadence Rep repetition
-   local
+fun {Echo DelN Dec RepN Music} % Del delai Dec decadence Rep repetition
+   local C1 ListsToMerge Del Rep in
+      if {IsInt DelN} then Del = {IntToFloat {Abs DelN}}
+      else Del = {Abs DelN} end
+      if {IsFloat RepN} then Rep = {FloatToInt {Abs RepN}}
+      else Rep = {Abs RepN} end
       C1 = {CalcFirstIntensity Dec Rep}
-      fun {ListsToMerge C Delai Dec Rep Music Count Acc} 
-	 if Rep==0 then {Reverse Acc} % J'AI MIS REP AU HASARD
+      fun {ListsToMerge C Rep Count Acc} 
+	 if Rep==0 then {Reverse Acc} 
 	 else
 	    local Mus MusInt in
-	       Mus = [voix([silence(duree:(Delai*Count))]) Music]
-	       MusInt = [(C*Dec)#{Flatten Mus}] % on calcule les intensite suivantes en les * a chaque iteration par d
-	       {ListsToMerge C*Dec Delai Dec Rep-1 Music Count+1 MusInt|Acc}
+	       Mus = [voix([silence(duree:(Del*Count))]) Music] % Delai c'est Del ????
+	       MusInt = (C*Dec)#Mus % on calcule les intensite suivantes en les * a chaque iteration par d
+	       {ListsToMerge C*Dec Rep-1 Count+1.0 MusInt|Acc}
 	    end
 	 end
       end
-   in
-      [{Append [C1#Music] {ListsToMerge C1 Del Dec Rep-1 Music 1.0 nil}}]
+      {Append [C1#Music] {ListsToMerge C1 Rep-1 1.0 nil}}
    end
 end
+
 
 % Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
 fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
-   local
-      fun {SumDec D R Count Acc}
-	 if R == 0 then Acc
-	 else
-	    {SumDec D R-1 Count+1 Acc+{Pow D Count}}
-	 end
+   local SumDec Rr in 
+      if {IsFloat Rep} then Rr = {FloatToInt {Abs Rep}} 
+      else Rr = {Abs Rep} end
+      fun {SumDec R Count Acc}
+	    if R == 0 then Acc
+	    else
+	       {SumDec R-1 Count+1.0 Acc+{Pow Dec Count}}
+	    end
       end
-   in
-      1.0 div (1.0 + {SumDec Dec Rep 1.0 0.0})
+      1.0/(1.0 + {SumDec Rr 1.0 0.0})
    end
 end
 
 
+% declare
+% proc {Assert Cond Exception}
+%    if {Not Cond} then raise Exception end end
+% end
+fun {Fondu Open Close Vec}
+   local OpenV CloseV L0 FonduAcc in
+      if {IsInt Open} then OpenV = {IntToFloat Open}*44100.0
+      else OpenV = Open*44100.0 end
+      if {IsInt Close} then CloseV = {IntToFloat Close}*44100.0
+      else CloseV = Close*44100.0 end
+      L0 = {IntToFloat {Length Vec}}
+      {Assert OpenV<L0 'FONDU : $ouverture est plus longue que la musique'}
+      {Assert CloseV<L0 'FONDU : $fermeture est plus longue que la musique'}
+      fun {FonduAcc Count Vec Acc}
+	 case Vec
+	 of nil then {Reverse Acc}
+	 [] H|T then
+	    if Count < OpenV andthen Count > L0-CloseV then
+	       {FonduAcc Count+1.0 T (Count / OpenV)*((L0-Count) / CloseV)*H|Acc}
+	    elseif Count < OpenV then {FonduAcc Count+1.0 T (Count / OpenV)*H|Acc}
+	    elseif Count > L0-CloseV then {FonduAcc Count+1.0 T ((L0-Count) / CloseV)*H|Acc}
+	    else
+	       {FonduAcc Count+1.0 T H|Acc}
+	    end
+	 end
+      end
+      {FonduAcc 1.0 Vec nil}
+   end
+end
+%Vec1 = [1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0]
+%Vec2 = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0]
+%Vec3 = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+%Vec4 = {Append Vec2 Vec2}
+%{Browse {Fondu 0.0003 0.0001 Vec4}}
+%Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0004 instrument:none) ] ) ]
+%Audio1 = {Mix Interprete Music1}
+%{Browse Audio1}
+%{Browse {Fondu 0.1 0.03 Audio1}}
+%{Browse {Fondu 0.000025 0.0003 Audio1}}
+
+
+%declare
+%proc {Assert Cond Exception}
+%   if {Not Cond} then raise Exception end end
+%end
+fun {FonduE Duree Vec1 Vec2}
+   local DureeV L1 L2 FonduEAcc in
+      if {IsInt Duree} then DureeV = {IntToFloat Duree}*44100.0
+      else DureeV = Duree*44100.0 end
+      L1 = {IntToFloat {Length Vec1}}
+      L2 = {IntToFloat {Length Vec2}}
+      {Assert DureeV<L1 'FONDU ENCHAINE : $duree du fondu est plus longue que la musique 1'}
+      {Assert DureeV<L2 'FONDU ENCHAINE : $duree du fondu est plus longue que la musique 2'}
+      fun {FonduEAcc Count V1 V2 Acc}
+	 if Count<L1-DureeV then % Avant fondu
+	    {FonduEAcc Count+1.0 V1.2 V2 V1.1|Acc}
+	 else
+	    case V1
+	    of nil then
+	       case V2
+	       of nil then % Fin
+		  {Reverse Acc}
+	       [] H|T then % Après fondu
+		  {FonduEAcc Count+1.0 nil T H|Acc}
+	       end
+	    [] H|T then % Dans fondu
+	       {FonduEAcc Count+1.0 T V2.2
+		((H*(L1-Count) + V2.1*(Count+DureeV-L1))/DureeV)|Acc}
+	    end
+	 end
+      end
+      {FonduEAcc 1.0 Vec1 Vec2 nil}
+   end
+end
+%Vec1 = [1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0]
+%Vec2 = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0]
+%Vec3 = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+%{Browse {FonduE 0.0002 Vec3 Vec2}}
+
+
 fun {Couper Debut Fin Vec}
-   local
+   local Init End L0 CouperAcc in
       Init = Debut*44100.0
       End  = Fin*44100.0
-      L = {IntToFloat {Length Vec}}
-      fun {CouperAcc Init End Count L0 Vec Acc}
+      L0 = {IntToFloat {Length Vec}}
+      fun {CouperAcc Count Vec Acc}
 	 if Count >= End then {Reverse Acc}
-	 elseif Init < 1.0 orelse Init > L0 then {CouperAcc Init End Count+1.0 L0 Vec 0.0|Acc}
+	 elseif Count < 0.0 orelse Count > L0 then {CouperAcc Count+1.0 Vec 0.0|Acc}
 	 else  
 	    case Vec
-	    of nil then {CouperAcc Init End Count+1.0 Vec L0 0.0|Acc}
+	    of nil then {CouperAcc Count+1.0 Vec 0.0|Acc}
 	    [] H|T then
-	       if Count < Init then {CouperAcc Init End Count+1.0 L0 T Acc}
-	       else {CouperAcc Init End Count+1.0 L0 T H|Acc}
+	       if Count < Init then {CouperAcc Count+1.0 T Acc}
+	       else {CouperAcc Count+1.0 T H|Acc}
 	       end
 	    end
 	 end
       end
-   in
-      {CouperAcc Init End 1.0 L Vec nil}
+      {CouperAcc Init Vec nil}
    end
 end
+
 
 
    
@@ -178,7 +263,9 @@ end
 %%% MIX %%% 
 %%%%%%%%%%%
 fun {MixVoix Voix}
-   local F N K Pi in
+   local F N K Pi FactLissage in
+      Pi = 3.14159
+      FactLissage = 0.2
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
@@ -188,9 +275,9 @@ fun {MixVoix Voix}
       [] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
-	 Pi = 3.14159
 	 K = 2.0*Pi*F/44100.0
-	 {MixEch K 1 N}|{MixVoix Rest}
+	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
+	 % Ce fondu lisse chaque note
       end
    end
 end

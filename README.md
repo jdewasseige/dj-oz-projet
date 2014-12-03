@@ -26,7 +26,7 @@ Code :
 	* Couper : Tests
 	* FonduE : Code + tests DONE
 * Extensions
-    * Lissage :
+    * Lissage : DONE
     * Instruments
        * Changer l'instrument dans un échantillon :
        * Charger le vecteur audio correspondant à l'instrument et à la note :
