@@ -20,10 +20,11 @@ local Mix Interprete Projet CWD in
    [Projet] = {Link [CWD#'Projet2014_mozart2.ozf']}
 
    local
-      Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
+      %Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
       ToNote GivesH Etirer Bourdon Transpose GivesDureeTot
       RepeteN RepeteD Clip Echo CalcFirstIntensity Couper
-      MixVoix MixEch MergeHelper SumMatrix Sum Fondu FonduE
+      MixVoix MixEch MergeHelper Sum Fondu FonduE MakeVector
+      Assert DivideVectors
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       \insert 'MixCode.oz' % /Users/John/dj-oz-projet/MixCode.oz
@@ -32,8 +33,9 @@ local Mix Interprete Projet CWD in
       \insert 'InterpreteCode.oz' % /Users/John/dj-oz-projet/InterpreteCode.oz
    end
 
-   local 
-      Music = {Projet.load CWD#'joie.dj.oz'}
+   local
+      Tbegin = {Time.time}
+      Music = {Projet.load CWD#'joieBis.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -41,6 +43,7 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-      {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'outPirate.wav'}}
+      {Browse {VirtualString.toAtom 'temps ecoule: '#{Time.time}-Tbegin#' secondes'}}
    end
 end

@@ -5,18 +5,18 @@ fun {Mix Interprete Music}
    [] Morceau|Rest then % Pas oublier Rest !!!
       case Morceau
       of voix( Voix ) then
-	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
+	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}} % APPEND à LA PLACE DE FLATTEN ???
       [] partition( Part ) then
 	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
       [] wave( FileName ) then
 	 nil
 	 %{Projet.readFile FileName}
       [] merge( MusicInt ) then
-	 case {MergeHelper MusicInt nil 0.0}
-	 of values(audiosMatrix:M sumF:S) then
-	    {List.map {SumMatrix M nil} fun {$ N} N/S end}
-	    % This line adds up the audios and divides them
-	    % by S, the sum of the factors
+	 case {MergeHelper MusicInt nil nil}
+	 of sumsVectors(sumAudios:SumAud sumF:SumF) then
+	    {Flatten {DivideVectors SumAud SumF}|{Mix Interprete Rest}}
+	    % Cette ligne divise le vecteur audio résultant par le vecteur
+            % résultant des facteurs (et concatène le résultat avec la suite...).
 	 end  
       [] renverser( Music ) then
 	 {Reverse {Mix Interprete Music}} 
@@ -296,43 +296,50 @@ end
 %%%%%%%%%%%%%
 %%% MERGE %%%
 %%%%%%%%%%%%%
-
-fun {MergeHelper MusicInt M S}
-   % Petit mot d'explication sur M :
-   % C'est un vecteur contenant les vecteurs audios calculés
-   % jusqu'à présent. C'est un vecteur de vecteurs, on peut donc
-   % le voir comme une matrice.
+fun {MergeHelper MusicInt SumAud SumF}
    case MusicInt
-   of nil then values(audiosMatrix:M sumF:S)
+   of nil then sumsVectors(sumAudios:SumAud sumF:SumF)
    [] (F#Music)|Rest then % selon moi ça marche avec et sans les ()
                           % autour de F#Music, une préférence ?
-      local Fr in
-	 if {IsInt F} then % Pour la robustesse
-	    Fr = {IntToFloat F}
-	 else
-	    Fr = F
-	 end
+      local Fr Audio AudioMult in
+	 % Pour la robustesse
+	 if {IsInt F} then Fr = {IntToFloat F}
+	 else Fr = F end
+	 Audio = {Mix Interprete Music}
+	 AudioMult =  {List.map Audio fun {$ N} Fr*N end}
 	 { MergeHelper Rest
-	   {Append M [{List.map {Mix Interprete Music} fun {$ N} Fr*N end}]}
-	   S+Fr }
-      % John si tu arrives à faire sans le Append c'est mieux mais
-      % c'est un truc à se rendre fou
-      %
-      % cette ligne incompréhensible appelle MergeHelper avec Rest
-      % comme MusicInt, en adjoignant à M le vecteur audio
-      % correspondant à Music multiplié par F (c'est le rôle de
-      % List.map) et en additionnant F à S.
+	   {Sum AudioMult SumAud}
+	   {Sum SumF {MakeVector Fr {Length Audio}}} }
+      % Cette ligne appelle MergeHelper avec Rest
+      % comme MusicInt, en additionnant AudioMult à SumAud et en
+      % additionnant un vecteur de la même taille qu'Audio mais
+      % "rempli" du facteur à SumF.
       end
    end
 end
 
 
-fun {SumMatrix M Acc}
-   % blabla description
-   case M
-   of nil then Acc
-   [] Vec|Rest then
-      {SumMatrix Rest {Sum Acc Vec}}
+fun {MakeVector Value Length}
+   % Retourne un vecteur (une liste) de taille $Length
+   % et exclusivement composé de valeurs $Value
+   fun {MakeVectorAcc I Acc}
+      if I==0 then Acc
+      else
+	 {MakeVectorAcc I-1 Value|Acc}
+      end
+   end
+in
+   {MakeVectorAcc Length nil}
+end
+
+
+fun {DivideVectors V1 V2}
+   % Retourne le résultat de la division élément par élément de
+   % V1 par V2. V1 et V2 doivent avoir la même taille.
+   case V1
+   of nil then nil
+   [] H|T then
+      H/V2.1|{DivideVectors T V2.2}
    end
 end
 
@@ -371,7 +378,6 @@ end
 
 
 
-
 % partition() : DONE OK
 % voix() : DONE
 % merge() : DONE
@@ -400,11 +406,11 @@ Music2 = [ partition( duree(secondes:0.0001 [silence b2] ) ) ]
 Music2bis = [ partition( duree(secondes:0.001 [a1 b2 c3] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
-{Browse {Mix Interprete Music2}}
+%{Browse {Mix Interprete Music2}}
 MusicInt = [(2.0#Music1) (60.0#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
-%{Browse {Mix Interprete Music5}}
+{Browse {Mix Interprete Music5}}
 Music6 = [ renverser( Music2bis ) ]
 Music7 = [ repetition(nombre:2 Music2bis) ]
 Music8 = [ repetition( duree:0.00015 Music2) ]
