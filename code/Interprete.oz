@@ -24,27 +24,11 @@ fun {Interprete Partition}
 	 {Etirer Nr/DTot Voix}
       end
    [] etirer( facteur:N Part ) then
-      local Voix
-	 Voix = {Interprete Part}
-      in
-	 if {IsInt N} then % Pour la robustesse
-	    {Etirer {IntToFloat N} Voix}
-	 else
-	    {Etirer N Voix}
-	 end
-      end
+      {Etirer N {Interprete Part}}
    [] bourdon( note:Note Part ) then
       {Bourdon {GivesH Note} {Interprete Part}}
    [] transpose( demitons:N Part ) then
-      local Voix
-	 Voix = {Interprete Part}
-      in
-	 if {IsFloat N} then % Pour la robustesse
-	    {Transpose {FloatToInt N} Voix}
-	 else
-	    {Transpose N Voix}
-	 end
-      end
+      {Transpose N {Interprete Part}}
    %[] instrument( nom:Instru Part ) then
    %   {Instrument Instru Part}
    else % Partition est une note
@@ -99,15 +83,19 @@ fun {GivesH Note}
 end
 
 
-fun {Etirer N Voix}
-   case Voix
-   of nil then nil
-   [] Ech|Rest then
-      case Ech
-      of silence(duree:D) then
-	 silence(duree:D*N)|{Etirer N Rest}	    
-      [] echantillon(hauteur:H duree:D instrument:I) then
-	 echantillon(hauteur:H duree:D*N instrument:I)|{Etirer N Rest}
+fun {Etirer Nr Voix}
+   local N in
+      if {IsInt Nr} then N = {IntToFloat {Abs Nr}}
+      else N = {Abs Nr} end
+      case Voix
+      of nil then nil
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	    silence(duree:D*N)|{Etirer N Rest}	    
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    echantillon(hauteur:H duree:D*N instrument:I)|{Etirer N Rest}
+	 end
       end
    end
 end
@@ -130,15 +118,20 @@ fun {Bourdon Hb Voix}
 end
 
 
-fun {Transpose N Voix}
-   case Voix
-   of nil then nil
-   [] Ech|Rest then
-      case Ech
-      of silence(duree:D) then
-	 silence(duree:D)|{Transpose N Rest}
-      [] echantillon(hauteur:H duree:D instrument:I) then
-	 echantillon(hauteur:H+N duree:D instrument:I)|{Transpose N Rest}
+fun {Transpose Nr Voix}
+   local N in 
+      if {IsFloat Nr} then N = {FloatToInt Nr}
+      else N = Nr
+      end
+      case Voix
+      of nil then nil
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	       silence(duree:D)|{Transpose N Rest}
+	    [] echantillon(hauteur:H duree:D instrument:I) then
+	    echantillon(hauteur:H+N duree:D instrument:I)|{Transpose N Rest}
+	 end
       end
    end
 end

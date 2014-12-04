@@ -15,6 +15,7 @@ Reminder :
 * ne pas oublier de vérifier que les fonctions déclarées dans code.oz correspondent à celles de interprete et mix (même si cela semble évident)
 * vérifier ECHO 
 * meilleurs commentaires dans le code
+* faire une fonction Duree dans Interprete? (lisibilité)
 
 Just done :
 * asserts + vérifier nombres réels et entiers
