@@ -11,14 +11,9 @@ TO DO dans l’ordre:
 -------
 
 * Nettoyer code pour 1ère soumission
-	* réorganiser le code (GetNote à coté de ToNote) ?
-	* changer le nom de GivesH en GetHauteur
-	* à la fin de MixVoix (et peut-être dans d'autres fonctions), rajouter un else
-	* meilleurs commentaires dans le code (input output)
-	* faire une fonction Duree dans Interprete? (lisibilité)
-	* meilleurs commentaires dans le code (input output)
-	* Régler les questions mises en commentaire dans le code
-qui renverrait nil ?
+	* JOHN : Debugger GetNote
+	* JOHN : réorganiser le code (GetNote à coté de ToNote) ?
+	* JOHN : faire une fonction Duree dans Interprete? (lisibilité)
 * 1ère version du rapport
 * 1ère soumission
 
@@ -29,6 +24,9 @@ qui renverrait nil ?
 	* Note trop haute ?
 	* Mixer hobbit
 * Improve Rapport
+* Improve code
+	* Meilleurs commentaires, input output pour chaque fct
+	* à la fin de MixVoix (et peut-être dans d'autres fonctions), rajouter un else qui renverrait nil ? ou qui raise une erreur?
 * instrument : si duree échantillon pas la même que celle du morceau + lissage
 * 2ème soumission
 

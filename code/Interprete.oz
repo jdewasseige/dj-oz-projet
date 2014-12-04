@@ -26,7 +26,7 @@ fun {Interprete Partition}
    [] etirer( facteur:N Part ) then
       {Etirer N {Interprete Part}}
    [] bourdon( note:Note Part ) then
-      {Bourdon {GivesH Note} {Interprete Part}}
+      {Bourdon {GetHauteur Note} {Interprete Part}}
    [] transpose( demitons:N Part ) then
       {Transpose N {Interprete Part}}
    [] instrument( nom:Instru Part ) then
@@ -35,7 +35,7 @@ fun {Interprete Partition}
       if Partition == silence then
 	 [silence(duree:1.0)]
       else
-	 [echantillon(hauteur:{GivesH Partition}
+	 [echantillon(hauteur:{GetHauteur Partition}
 		      duree:1.0 instrument:none)]
       end
    end
@@ -57,7 +57,7 @@ fun {ToNote Note}
 end
 
 
-fun {GivesH Note}
+fun {GetHauteur Note}
    if Note == silence then silence
    else
       local Noteext H1 H2 H3 in
