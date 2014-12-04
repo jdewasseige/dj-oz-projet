@@ -104,7 +104,7 @@ boucles et nous n'appelons jamais deux fois la même fonction récursive dans un
 		\fun{GetNote} & \bigO{1} & Transforme une hauteur en note  \\
 		\hline
 		\fun{Merge} & \bigO{n} &  Longueur de MusInt \\
-		\fun{MergeAux} & \bigO{n} & Longueur de max(longueur Vec1, longueur Vec2)  \\		
+		\fun{MergeAux} & \bigO{n} & max(longueur Vec1, longueur Vec2)  \\		
 		\hline
 		\fun{RepeteN} & \bigO{n} & Valeur de N \\
 		\fun{RepeteD} & \bigO{n} & Valeur de Duree \\ 
@@ -112,8 +112,10 @@ boucles et nous n'appelons jamais deux fois la même fonction récursive dans un
 		\fun{Echo} & \bigO{n} & Longueur de Music  \\
 		\fun{CalcFirstIntensity} & \bigO{n} & Nombre de répetition  \\
 		\fun{Fondu} & \bigO{n} & Longueur de Vec  \\
-		\fun{FonduE} & \bigO{n} & Longueur de Vec1  \\
+		\fun{FonduE} & \bigO{n} & max(longueur Vec1, longueur Vec2)  \\
 		\fun{Couper} & \bigO{n} & Longueur de Vec  \\
+		\hline
+		\fun{EnveloppeADSR} & \bigO{n} & Longueur de Vec \\
 		\hline
 	\end{tabular}
 	\caption{Complexités des fonctions de \fun{Mix}.}
@@ -171,7 +173,7 @@ Ceci est fait en combinant les fonctions \fun{Couper} et \fun{RepeteD}.
 Nous finissons par lisser les vecteurs audios avec une enveloppe ADSR (section \ref{subsec:adsr}).
 
 \paragraph{Remarque}
-Pour une raison inconnue, nous rencontrons un problème dans lors de l'éxécution de \fun{Instrument}.
+Pour une raison inconnue, nous rencontrons un problème lors de l'éxécution de \fun{Instrument}.
 Nous avons donc séparer cette extension dans un fichier \textit{instrument.oz}.
 
 
