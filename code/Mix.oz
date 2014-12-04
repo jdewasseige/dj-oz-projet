@@ -118,9 +118,9 @@ fun {Clip Bas Haut Vec}
    end
 end
 
-
+declare
 fun {Echo DelN Dec RepN Music} % Del:delai Dec:decadence Rep:repetition
-   local C1 ListsToMerge Del Rep in
+   local C1 ListsToMerge Del Rep MusicMult in
       if {IsInt DelN} then Del = {IntToFloat {Abs DelN}}
       else Del = {Abs DelN} end
       if {IsFloat RepN} then Rep = {FloatToInt {Abs RepN}}
@@ -137,7 +137,7 @@ fun {Echo DelN Dec RepN Music} % Del:delai Dec:decadence Rep:repetition
 	    end
 	 end
       end
-      {Append [C1#Music] {ListsToMerge C1 Rep-1 1.0 nil}}
+      {Append (C1#Music) {ListsToMerge C1 Rep-1 1.0 nil}}
    end
 end
 

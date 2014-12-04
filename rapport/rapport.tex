@@ -56,13 +56,16 @@ N'en ayant pas eu besoin, nous n'en avons pas utilisé.
 \paragraph{Temps de calcul}
 Nous avons ajouté à \fun{code.oz} deux lignes qui mesurent le temps que prend la machine à calculer le fichier audio et qui l'affichent.
 
+\paragraph{\fun{Echo} buggé}
+Nous n'avons pas eu le temps de debugger \fun{Echo} qui ne fonctionne pas pour une raison inconnue.
+
 \section{Complexité des fonctions}
 
 Les complexités des différentes sous-fonctions de \fun{Inteprete} (resp. \fun{Mix})
 se trouvent dans le tableau \ref{tab:complexite_interprete} 
 (resp. tableau \ref{tab:complexite_mix}).
 
-
+On remarque que notre code a une complexité générale \emph{linéaire} car nous n'utilisons nulle part de boucle et nous n'appelons jamais deux fois la même fonction récursive dans une fonction.
 \subsection{Interprete}
 
 \begin{table}[h]
@@ -102,7 +105,7 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		\fun{GetNote} & \bigO{1} & Transforme une hauteur en note  \\
 		\hline
 		\fun{Merge} & \bigO{n} &  Longueur de MusInt \\
-		\fun{MergeAux} & \bigO{n} & Longueur de max(longueur Vec1, longueur Vec2)  \\		
+		\fun{MergeAux} & \bigO{n} & max(longueur Vec1, longueur Vec2)  \\		
 		\hline
 		\fun{RepeteN} & \bigO{n} & Valeur de N \\
 		\fun{RepeteD} & \bigO{n} & Valeur de Duree \\ 
@@ -110,9 +113,10 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		\fun{Echo} & \bigO{n} & Longueur de Music  \\
 		\fun{CalcFirstIntensity} & \bigO{n} & Nombre de répetition  \\
 		\fun{Fondu} & \bigO{n} & Longueur de Vec  \\
-		\fun{FonduE} & \bigO{n} & Longueur de Vec1  \\
+		\fun{FonduE} & \bigO{n} & max(longueur Vec1, longueur Vec2)  \\
 		\fun{Couper} & \bigO{n} & Longueur de Vec  \\
-		\hline
+		\fun{EnveloppeADSR} & \bigO{n} & Longueur de Vec \\
+	\hline
 	\end{tabular}
 	\caption{Complexités des fonctions de \fun{Mix}.}
 	\label{tab:complexite_mix}
@@ -169,8 +173,8 @@ Ceci est fait en combinant les fonctions \fun{Couper} et \fun{RepeteD}.
 Nous finissons par lisser les vecteurs audios avec une enveloppe ADSR (section \ref{subsec:adsr}).
 
 \paragraph{Remarque}
-Pour une raison inconnue, nous rencontrons un problème dans lors de l'éxécution de \fun{Instrument}.
-Nous avons donc séparer cette extension dans un fichier \textit{instrument.oz}.
+Pour une raison inconnue, nous rencontrons un problème lors de l'exécution de \fun{Instrument}.
+Nous avons donc séparé cette extension dans un fichier \textit{instrument.oz}.
 
 
 
