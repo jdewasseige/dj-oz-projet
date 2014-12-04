@@ -24,9 +24,9 @@ Reminder :
 qui renverrait nil 
 * à la fin de MixVoix (et peut-être dans d'autres fonctions), rajouter un else
 qui renverrait nil ?
-
-Just done :
-* asserts + vérifier nombres réels et entiers
+* changer le nom de GivesH en GetHauteur
+* instrument : si duree échantillon pas la même que celle du morceau + lissage
+* réorganiser le code (GetNote à coté de ToNote) ?
 
 Code :
 * Interprete : DONE
