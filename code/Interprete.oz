@@ -165,11 +165,9 @@ Partition2 = duree( secondes:24 b2)
 Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
 	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 %{Browse {Interprete [Partition1 muet(Partition1)]}}
-%{Browse {Interprete duree(secondes:0.001 [a2] )}}
+%{Browse {Interprete duree(secondes:0.0001 [a2] )}}
 %{Browse {Interprete [a4 b2]}}
 % Test hard(hard)core passé avec mention :D
-
-
 
 % Lancer une erreur si l'octave est différente de 0, 1, 2, 3, 4 ? Pq s'arrêter à 4 ?
 % Idem pour le nom de la note, p.ex. erreur si c'est w ? Ou bien on se prend pas la tête

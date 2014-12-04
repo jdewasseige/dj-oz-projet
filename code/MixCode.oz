@@ -153,10 +153,6 @@ fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
 end
 
 
-proc {Assert Cond Exception}
-   if {Not Cond} then raise Exception end end
-end
-
 fun {Fondu Open Close Vec}
    local OpenV CloseV L0 FonduAcc in
       if {IsInt Open} then OpenV = {IntToFloat Open}*44100.0
