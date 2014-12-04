@@ -71,7 +71,8 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		\hline
 		Fonction & Complexité & Commentaires  \\
 		\hline \hline
-		\fun{ToNote} & \bigO{1} &  Transforme une note en une note étendue. \\
+		\fun{Inteprete} & \bigO{n} & Taille de la partition. \\ 
+		\fun{ToNote} & \bigO{1} & Transforme une note en une note étendue. \\
 	       	\fun{GetHauteur}  & \bigO{1} & Donne la hauteur d'une note.  \\
 		\fun{Etirer} & \bigO{n} & Longueur de Voix  \\
 		\fun{Bourdon} & \bigO{n} & Longueur de Voix \\
@@ -94,23 +95,23 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		\hline
 		Fonction & Complexité & Commentaires  \\
 		\hline \hline
-		\fun{MixVoix} & \bigO{n} & Here is a test commentaire.  \\
-	       	\fun{MixSilence}  & \bigO{n} & test  \\
-		\fun{MixEch} & \bigO{n} & test  \\
-		\fun{UseWav} & \bigO{n} & test  \\
-		\fun{GetNote} & \bigO{n} & test  \\
+		\fun{MixVoix} & \bigO{n} & Longueur de la musique  \\
+	       	\fun{MixSilence}  & \bigO{n} & Longueur du vecteur audio \\
+		\fun{MixEch} & \bigO{n} & Longueur du vecteur audio \\
+		\fun{UseWav} & \bigO{1} & Transforme un echantillon en vecteur audio  \\
+		\fun{GetNote} & \bigO{1} & Transforme une hauteur en note  \\
 		\hline
-		\fun{Merge} & \bigO{n} & test  \\
-		\fun{MergeAux} & \bigO{n} & test  \\		
+		\fun{Merge} & \bigO{n} &  Longueur de MusInt \\
+		\fun{MergeAux} & \bigO{n} & Longueur de max(longueur Vec1, longueur Vec2)  \\		
 		\hline
-		\fun{RepeteN} & \bigO{n} & test  \\
-		\fun{RepeteD} & \bigO{n} & test  \\ 
-		\fun{Clip} & \bigO{n} & test  \\
-		\fun{Echo} & \bigO{n} & test  \\
-		\fun{CalcFirstIntensity} & \bigO{n} & test  \\
-		\fun{Fondu} & \bigO{n} & test  \\
-		\fun{FonduE} & \bigO{n} & test  \\
-		\fun{Couper} & \bigO{n} & test  \\
+		\fun{RepeteN} & \bigO{n} & Valeur de N \\
+		\fun{RepeteD} & \bigO{n} & Valeur de Duree \\ 
+		\fun{Clip} & \bigO{n} & Longueur de Vec  \\
+		\fun{Echo} & \bigO{n} & Longueur de Music  \\
+		\fun{CalcFirstIntensity} & \bigO{n} & Nombre de répetition  \\
+		\fun{Fondu} & \bigO{n} & Longueur de Vec  \\
+		\fun{FonduE} & \bigO{n} & Longueur de Vec1  \\
+		\fun{Couper} & \bigO{n} & Longueur de Vec  \\
 		\hline
 	\end{tabular}
 	\caption{Complexités des fonctions de \fun{Mix}.}
