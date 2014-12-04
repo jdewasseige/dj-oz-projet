@@ -1,3 +1,7 @@
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
+
 proc {Assert Cond Exception}
    if {Not Cond} then raise Exception end end
 end
@@ -8,7 +12,7 @@ fun {Interprete Partition}
    [] NestedPart|Rest then
       {Flatten {Interprete NestedPart}|{Interprete Rest}}
    [] muet( Part ) then
-	{Interprete bourdon(note:silence Part)}
+      {Interprete bourdon(note:silence Part)}
    [] duree( secondes:N Part ) then
       % Le rapport de duree des echantillons entre eux est conserve
       local Nr DTot Voix in
@@ -22,33 +26,19 @@ fun {Interprete Partition}
 	 {Etirer Nr/DTot Voix}
       end
    [] etirer( facteur:N Part ) then
-      local Voix
-	 Voix = {Interprete Part}
-      in
-	 if {IsInt N} then % Pour la robustesse
-	    {Etirer {IntToFloat N} Voix}
-	 else
-	    {Etirer N Voix}
-	 end
-      end
+      {Etirer N {Interprete Part}}
    [] bourdon( note:Note Part ) then
-      {Bourdon {GivesH Note} {Interprete Part}}
+      {Bourdon {GetHauteur Note} {Interprete Part}}
    [] transpose( demitons:N Part ) then
-      local Voix
-	 Voix = {Interprete Part}
-      in
-	 if {IsFloat N} then % Pour la robustesse
-	    {Transpose {FloatToInt N} Voix}
-	 else
-	    {Transpose N Voix}
-	 end
-      end
+      {Transpose N {Interprete Part}}
+   [] instrument( nom:Instru Part ) then
+      {Instrument Instru {Interprete Part}}
    else % Partition est une note
       if Partition == silence then
 	 [silence(duree:1.0)]
       else
-	 [echantillon(hauteur:{GivesH Partition}
-		     duree:1.0 instrument:none)]
+	 [echantillon(hauteur:{GetHauteur Partition}
+		      duree:1.0 instrument:none)]
       end
    end
 end
@@ -69,7 +59,7 @@ fun {ToNote Note}
 end
 
 
-fun {GivesH Note}
+fun {GetHauteur Note}
    if Note == silence then silence
    else
       local Noteext H1 H2 H3 in
@@ -95,15 +85,19 @@ fun {GivesH Note}
 end
 
 
-fun {Etirer N Voix}
-   case Voix
-   of nil then nil
-   [] Ech|Rest then
-      case Ech
-      of silence(duree:D) then
-	 silence(duree:D*N)|{Etirer N Rest}	    
-      [] echantillon(hauteur:H duree:D instrument:I) then
-	 echantillon(hauteur:H duree:D*N instrument:I)|{Etirer N Rest}
+fun {Etirer Nr Voix}
+   local N in
+      if {IsInt Nr} then N = {IntToFloat {Abs Nr}}
+      else N = {Abs Nr} end
+      case Voix
+      of nil then nil
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	    silence(duree:D*N)|{Etirer N Rest}	    
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    echantillon(hauteur:H duree:D*N instrument:I)|{Etirer N Rest}
+	 end
       end
    end
 end
@@ -121,24 +115,48 @@ fun {Bourdon Hb Voix}
 	 [] echantillon(hauteur:H duree:D instrument:I) then
 	    echantillon(hauteur:Hb duree:D instrument:I)|{Bourdon Hb Rest}
 	 end
-     end
-   end
-end
-
-
-fun {Transpose N Voix}
-   case Voix
-   of nil then nil
-   [] Ech|Rest then
-      case Ech
-      of silence(duree:D) then
-	 silence(duree:D)|{Transpose N Rest}
-      [] echantillon(hauteur:H duree:D instrument:I) then
-	 echantillon(hauteur:H+N duree:D instrument:I)|{Transpose N Rest}
       end
    end
 end
 
+
+fun {Transpose Nr Voix}
+   local N in 
+      if {IsFloat Nr} then N = {FloatToInt Nr}
+      else N = Nr
+      end
+      case Voix
+      of nil then nil
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	    silence(duree:D)|{Transpose N Rest}
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    echantillon(hauteur:H+N duree:D instrument:I)|{Transpose N Rest}
+	 end
+      end
+   end
+end
+
+
+fun {Instrument Instru Voix}
+   fun {InstrumentAcc Voix Acc}
+      case Voix
+      of nil then {Reverse Acc}
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	    {InstrumentAcc Rest Ech|Acc}
+	 [] echantillon(hauteur:H duree:D instrument:none) then
+	    {InstrumentAcc Rest echantillon(hauteur:H duree:D instrument:Instru)|Acc}
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    {InstrumentAcc Rest Ech|Acc}
+	 end
+      end
+   end
+in
+   {InstrumentAcc Voix nil}
+end
 
 fun {GivesDureeTot Voix}
    local 

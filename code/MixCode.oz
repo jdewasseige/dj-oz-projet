@@ -1,40 +1,49 @@
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
+
 fun {Mix Interprete Music}
    case Music
    of nil then nil
-   [] Morceau|Rest then % Pas oublier Rest !!!
-      case Morceau
-      of voix( Voix ) then
-	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}} % APPEND à LA PLACE DE FLATTEN ???
-      [] partition( Part ) then
-	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
-      [] wave( FileName ) then
-	 nil
-	 %{Projet.readFile FileName}
-      [] merge( MusicInt ) then
-	 {Merge MusicInt}
-      [] renverser( Music ) then
-	 {Reverse {Mix Interprete Music}} 
-      [] repetition( nombre:N Music ) then
-	 {RepeteN N {Mix Interprete Music}}
-      [] repetition( duree:Sec Music ) then
-	 {RepeteD Sec {Mix Interprete Music}}
-      [] clip( bas:Bas haut:Haut Music ) then
-	 {Clip Bas Haut {Mix Interprete Music}}
-      [] echo(delai:Del Music) then
-	 {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
-      [] echo(delai:Del decadence:Dec Music) then
-	 {Mix Interprete [merge({Echo Del Dec 1 Music})]}
-      [] echo(delai:Del decadence:Dec repetition:N Music) then
-	 {Mix Interprete [merge({Echo Del Dec N Music})]}
-      [] fondu( ouverture:Ouv fermeture:Fer Music ) then
-	 {Fondu Ouv Fer {Mix Interprete Music}}
-      [] fondu_enchaine( duree:Duree Music1 Music2 ) then
-	 {FonduE Duree {Mix Interprete Music1} {Mix Interprete Music2}}
-      [] couper(debut:Debut fin:Fin Music) then
-	 {Couper Debut Fin {Mix Interprete Music}}
-      else % Music est un filtre pas encore fait
-	 nil
+   [] Morceau|Rest then
+      local Audio in
+	 case Morceau
+	 of voix( Voix ) then
+	    Audio = {MixVoix Voix}
+	 [] partition( Part ) then
+	    Audio = {MixVoix {Interprete Part}}
+	 [] wave( FileName ) then
+	    Audio = nil % pour que ça compile
+	    % Audio = {Projet.readFile FileName}
+	 [] merge( MusicInt ) then
+	    Audio = {Merge MusicInt}  
+	 [] renverser( Music ) then
+	    Audio = {Reverse {Mix Interprete Music}} 
+	 [] repetition( nombre:N Music ) then
+	    Audio = {RepeteN N {Mix Interprete Music}}
+	 [] repetition( duree:Sec Music ) then
+	    Audio = {RepeteD Sec {Mix Interprete Music}}
+	 [] clip( bas:Bas haut:Haut Music ) then
+	    Audio = {Clip Bas Haut {Mix Interprete Music}}
+	 [] echo(delai:Del Music) then
+	    Audio = {Mix Interprete [merge({Echo Del 1.0 1 Music})]}
+	 [] echo(delai:Del decadence:Dec Music) then
+	    Audio = {Mix Interprete [merge({Echo Del Dec 1 Music})]}
+	 [] echo(delai:Del decadence:Dec repetition:N Music) then
+	    Audio = {Mix Interprete [merge({Echo Del Dec N Music})]}
+	 [] fondu( ouverture:Ouv fermeture:Fer Music ) then
+	    Audio = {Fondu Ouv Fer {Mix Interprete Music}}
+	 [] fondu_enchaine( duree:Duree Music1 Music2 ) then
+	    Audio = {FonduE Duree {Mix Interprete Music1} {Mix Interprete Music2}}
+	 [] couper(debut:Debut fin:Fin Music) then
+	    Audio = {Couper Debut Fin {Mix Interprete Music}}
+	 else
+	    raise 'MIX : $Morceau ne possede pas le bon format' end
+	 end
+	 {Flatten Audio|{Mix Interprete Rest}}
       end
+   else
+      raise 'MIX : $Music doit etre une liste' end
    end
 end
 
@@ -44,7 +53,7 @@ end
 
 fun {RepeteN N Vec}
    local Nr in
-      % Les cas où N n'est pas un naturel positif sont gérés
+      % Les cas ou N n'est pas un naturel positif sont geres
       if {IsFloat N} then Nr = {Abs {FloatToInt N}}
       else Nr = {Abs N} end
       local
@@ -55,17 +64,16 @@ fun {RepeteN N Vec}
 	    end
 	 end
       in
-	 {RepeteNAcc N Vec Vec}
+	 {RepeteNAcc Nr Vec Vec}
          % Si N = 0, on joue la musique une fois
       end
    end
 end
 
 
-% Gérer cas où Duree est un int, et où c'est négatif
 fun {RepeteD Duree Vec}
    local DureeF DureeS L N R CompleteAcc in
-      % Les cas où N n'est pas un float positif sont gérés
+      % Les cas ou N n'est pas un float positif sont geres
       if {IsInt Duree} then DureeF = {Abs {IntToFloat Duree}}
       else DureeF = {Abs Duree} end
       DureeS = {FloatToInt DureeF*44100.0}
@@ -76,7 +84,8 @@ fun {RepeteD Duree Vec}
 	 if Count == 0 then {Reverse Acc} 
 	 else
 	    case Vec
-	    of nil then {Reverse Acc} % ça ne devrait pas arriver si la fonction est correctement utilisée
+	    of nil then {Reverse Acc} % ça ne devrait pas arriver si
+	                              % la fonction est correctement utilisee
 	    [] H|T then
 	       {CompleteAcc Count-1 T H|Acc}
 	    end
@@ -92,7 +101,7 @@ end
 
 
 fun {Clip Bas Haut Vec}
-   {Assert Bas=<Haut 'CLIP : $bas est inférieur à $haut'}
+   {Assert Bas=<Haut 'CLIP : $bas est inferieur a $haut'}
    local ClipAcc in
       fun {ClipAcc Vec Acc}
 	 case Vec
@@ -109,7 +118,7 @@ fun {Clip Bas Haut Vec}
 end
 
 
-fun {Echo DelN Dec RepN Music} % Del delai Dec decadence Rep repetition
+fun {Echo DelN Dec RepN Music} % Del:delai Dec:decadence Rep:repetition
    local C1 ListsToMerge Del Rep in
       if {IsInt DelN} then Del = {IntToFloat {Abs DelN}}
       else Del = {Abs DelN} end
@@ -120,8 +129,9 @@ fun {Echo DelN Dec RepN Music} % Del delai Dec decadence Rep repetition
 	 if Rep==0 then {Reverse Acc} 
 	 else
 	    local Mus MusInt in
-	       Mus = [voix([silence(duree:(Del*Count))]) Music] % Delai c'est Del ????
-	       MusInt = (C*Dec)#Mus % on calcule les intensite suivantes en les * a chaque iteration par d
+	       Mus = [voix([silence(duree:(Del*Count))]) Music]
+	       MusInt = (C*Dec)#Mus % on calcule les intensite suivantes en
+	                            % les * a chaque iteration par d
 	       {ListsToMerge C*Dec Rep-1 Count+1.0 MusInt|Acc}
 	    end
 	 end
@@ -131,8 +141,9 @@ fun {Echo DelN Dec RepN Music} % Del delai Dec decadence Rep repetition
 end
 
 
-% Permet de calculer la premiere intensite qui vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
-fun {CalcFirstIntensity Dec Rep} % Dep decadence Rep repetition
+% Permet de calculer la premiere intensite qui
+% vaut 1/(1+d^1+d^2+...+d^k) si on repete k fois  
+fun {CalcFirstIntensity Dec Rep} % Dec:decadence Rep:repetition
    local SumDec Rr in 
       if {IsFloat Rep} then Rr = {FloatToInt {Abs Rep}} 
       else Rr = {Abs Rep} end
@@ -184,10 +195,7 @@ end
 %{Browse {Fondu 0.000025 0.0003 Audio1}}
 
 
-%declare
-%proc {Assert Cond Exception}
-%   if {Not Cond} then raise Exception end end
-%end
+
 fun {FonduE Duree Vec1 Vec2}
    local DureeV L1 L2 FonduEAcc in
       if {IsInt Duree} then DureeV = {IntToFloat Duree}*44100.0
@@ -205,7 +213,7 @@ fun {FonduE Duree Vec1 Vec2}
 	       case V2
 	       of nil then % Fin
 		  {Reverse Acc}
-	       [] H|T then % Après fondu
+	       [] H|T then % Apres fondu
 		  {FonduEAcc Count+1.0 nil T H|Acc}
 	       end
 	    [] H|T then % Dans fondu
@@ -262,12 +270,17 @@ fun {MixVoix Voix}
       [] silence(duree:D)|Rest then
 	 N = {FloatToInt D*44100.0}
 	 {Flatten {MixSilence 1 N}|{MixVoix Rest}}
-      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+      [] echantillon( hauteur:H duree:D instrument:none )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
 	 K = 2.0*Pi*F/44100.0
 	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
-	 % Ce fondu lisse chaque note
+         % Ce fondu lisse chaque echantillon (cfr extension lissage)
+      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+	 local Ech in
+	    Ech = echantillon(hauteur:H duree:D instrument:I)
+	    {UseWav Ech}|{MixVoix Rest}
+	 end
       end
    end
 end
@@ -284,6 +297,47 @@ fun {MixEch K I Max}
    else
       0.5*{Sin K*{IntToFloat I}}|{MixEch K I+1 Max}
    end
+end
+
+fun {UseWav Ech}
+   case Ech
+   of echantillon(hauteur:H duree:D instrument:I) then
+      local Nom Note in
+	 Nom = {VirtualString.toAtom I}
+	 Note = {VirtualString.toAtom {GetNote H}}
+	 %{Project.readFile CWD#'wave/instruments/'#Nom#'_'#Note#'.wav'}
+	 nil % pour que ça compile
+      end
+   else nil end
+end
+
+% DEBUGGER GETNOTE
+
+fun {GetNote H}
+%   local Octave Letter in
+%   if H >= 0 then
+%      Octave = 4 + ( (H+9) div 12 )
+%      Letter = H - (Octave-4)*12
+%   else
+%      Octave = 4 + ( (H-2) div 12 )
+%      Letter = H - (Octave-4)*12
+%   end
+%   case Letter
+%   of 0 then 'a'#Octave
+%   [] 1 then 'a'#Octave#'#'
+%   [] 2 then 'b'#Octave
+%   [] ~9 then 'c'#Octave
+%   [] ~8 then 'c'#Octave#'#'
+%   [] ~7 then d 'd'#Octave
+%   [] ~6 then d 'd'#Octave#'#'
+%   [] ~5 then e 'b'#Octave#'#'
+%   [] ~4 then 'f'#Octave#
+%   [] ~3 then 'f'#Octave#'#'
+%   [] ~2 then 'g'#Octave
+%   [] ~1 then 'g'#Octave#'#'
+%   end
+%   end
+   nil % pour que ça compile
 end
 
 
