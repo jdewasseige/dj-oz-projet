@@ -254,7 +254,7 @@ fun {Couper Debut Fin Vec}
    end
 end
 
-declare
+
 fun {EnveloppeADSR A D S R Vec} % A - attack , D - decay , S - sustain , R - release
    local L0 EnvADSRaux in
       L0 = {IntToFloat {Length Vec}}
@@ -286,16 +286,13 @@ end
 
       
 
-   
-
-
 %%%%%%%%%%%
 %%% MIX %%% 
 %%%%%%%%%%%
 fun {MixVoix Voix}
    local F N K Pi FactLissage in
       Pi = 3.14159
-      FactLissage = 0.2
+      FactLissage = 0.1
       case Voix
       of nil then nil
       [] silence(duree:D)|Rest then
@@ -305,8 +302,8 @@ fun {MixVoix Voix}
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
 	 K = 2.0*Pi*F/44100.0
-	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
-         % Ce fondu lisse chaque echantillon (cfr extension lissage)
+	 {EnveloppeADSR 0.04 0.02 0.8 0.05 {MixEch K 1 N}}|{MixVoix Rest} % Enveloppe ADSR 
+         %{Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest} % Envelopppe Trapeze
       %[] echantillon( hauteur:H duree:D instrument:I )|Rest then
 	% local Ech 
 	 %   Ech = echantillon(hauteur:H duree:D instrument:I)
@@ -417,9 +414,9 @@ Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
 %{Browse {Mix Interprete Music2bis}}
 %{Browse {EnveloppeADSR 0.04 0.02 0.8 0.05 {Mix Interprete Music2bis}}}
 %{Browse {Mix Interprete Music0}}
-{Browse {Mix Interprete Music5}}
-{Browse {Mix Interprete Music8}}
-{Browse {Mix Interprete Music0}}
+%{Browse {Mix Interprete Music5}}
+%{Browse {Mix Interprete Music8}}
+%{Browse {Mix Interprete Music0}}
 Music14 = {Append Music0 {Append Music1 Music0}}
 Music15 = [partition([instrument(nom:drums [c4 d4 d4 c4])])]
 %{Browse {Mix Interprete Music12}}
