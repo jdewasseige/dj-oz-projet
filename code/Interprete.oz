@@ -1,5 +1,8 @@
-declare % /!\ ne pas oublier d’enlever ‘declare’
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
 
+declare % /!\ ne pas oublier d’enlever ‘declare’
 proc {Assert Cond Exception}
    if {Not Cond} then raise Exception end end
 end

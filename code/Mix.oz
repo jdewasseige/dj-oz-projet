@@ -1,3 +1,7 @@
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
+
 declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Mix Interprete Music}
    case Music
@@ -416,8 +420,8 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-%{Browse {Mix Interprete Music5}}
-%{Browse {Mix Interprete Music8}}
-%{Browse {Mix Interprete Music0}}
+{Browse {Mix Interprete Music5}}
+{Browse {Mix Interprete Music8}}
+{Browse {Mix Interprete Music0}}
 Music14 = {Append Music0 {Append Music1 Music0}}
 {Browse {Mix Interprete Music14}}

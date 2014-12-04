@@ -1,3 +1,7 @@
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
+
 % The Lord of The Rings - Concerning Hobbits - Howard Shore
 local
    Ro = 2.0 % Ronde
