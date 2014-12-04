@@ -18,8 +18,7 @@
 \begin{document}
 
 \maketitle
-% structure, décisions de conception, difficultés rencontrées, limitations et problèmes connus
-% justifier les constructions non déclaratives 
+% difficultés rencontrées, limitations et problèmes connus
 % complexité des fonctions 
 % décrire les extensions
 
@@ -30,7 +29,7 @@ Pour une meilleure lisibilité du code, nous avons décidé d'insérer le code d
 
 Nous avons procédé de la même manière pour implémenter \fun{Interprete} et \fun{Mix}. La fonction-mère contient un grand \fun{case Partition\bslash Music} qui gère tous les cas d'input que le programme doit pouvoir gérer. Selon le pattern reconnu, la fonction-mère va alors appeler une sous-fonction auxiliaire qui gère cette possibilité en particulier. L'usage de ces sous-fonctions, en plus de rendre le code plus lisible, est indispensable puisque la plupart sont récursives.
 
-Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour !
+Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour ! Pour écrire sa partition, nous avons notamment utilisé \fun{muet}, \fun{duree}, \fun{etirer}, \fun{bourdon}, \fun{transpose}.
 
 \paragraph{Limitations}
 Le plus grand problème est certainement la lenteur de l'implémentation Mozart 2. 
@@ -46,18 +45,16 @@ Appréciant la limpidité de la procédure \fun{Assert} définie dans \fun{Proje
 Nous avons tenu à rendre notre code plus robuste en convertissant l'input dès que c'était raisonnable et possible. Par exemple, pour \fun{RepeteD}, la durée doit être un \fun{float} positif, mais nous la convertissons si ce n'est pas le cas (p.ex. \fun{$\sim$ 42} sera converti en \fun{42.0}).
 
 \paragraph{Eviter \fun{Append}}
-Nous avons tenu à éviter l'usage de la fonction \fun{Append} car elle est de complexité linéaire \bigO{n}. Nous concaténons donc en utilisant le symbole |, ainsi qu'un \fun{Reverse} ou un \fun{Flatten} quand cela s'avère nécessaire.
+Nous avons tenu à éviter l'usage de la fonction \fun{Append} car elle est de complexité linéaire \bigO{n}. Nous concaténons donc en utilisant le symbole |, aidé d'un \fun{Reverse} ou un \fun{Flatten} quand cela s'avère nécessaire.
 
 \paragraph{Récursion terminale}
 Nous avons veillé à ce que nos fonctions soient récursives terminales, soit par l'usage d'un accumulateur, soit (pour les listes) en utilisant judicieusement l'avantage de la programmation déclarative, c'est-à-dire en renvoyant quelque chose comme \fun{Résultat|\{Fonction Reste\}}.
 	
 \paragraph{Constructions non-déclaratives}
 N'en ayant pas eu besoin, nous n'en avons pas utilisé.
-% assert
-% float int robustesse abs
-% | et pas append + reverse
-% Acc réc terminales
-% utilisé au max api (reverse, map,...)
+
+\paragraph{Temps de calcul}
+Nous avons ajouté à \fun{code.oz} deux lignes qui mesurent le temps que prend la machine à calculer le fichier audio et qui l'affichent.
 
 \section{Complexité des fonctions}
 
