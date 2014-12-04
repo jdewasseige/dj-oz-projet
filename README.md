@@ -16,6 +16,10 @@ Reminder :
 * vérifier ECHO 
 * meilleurs commentaires dans le code
 * faire une fonction Duree dans Interprete? (lisibilité)
+* meilleurs commentaires dans le code (input output)
+* Rapport
+* Instruments et/ou effets dans le hobbit
+* Tester effets sur le hobbit ou sur joie
 
 Just done :
 * asserts + vérifier nombres réels et entiers
@@ -35,11 +39,11 @@ Code :
        * Changer l'instrument dans un échantillon :
        * Charger le vecteur audio correspondant à l'instrument et à la note :
        * Couper/Fondu du vecteur audio pour qu'il correspondent à la durée de la note :
-    * Créativité
-    * Effets complexes
-* Partition Lord of the Rings OU Let It Go
+    * Créativité OSEF
+    * Effets complexes OSEF
+* Partition Lord of the Rings OU Let It Go DONE
 * Perfectionnisme :
-	* Asserts
+	* Asserts DONE
 	* Robustesse float int
 	* Variables globales beauté lisibilité COMPRIS (environnement contextuel) (voir Fondu et FonduE)
 	* Commenter
