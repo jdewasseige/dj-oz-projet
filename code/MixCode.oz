@@ -4,7 +4,7 @@ fun {Mix Interprete Music}
    [] Morceau|Rest then % Pas oublier Rest !!!
       case Morceau
       of voix( Voix ) then
-	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
+	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}} % APPEND à LA PLACE DE FLATTEN ???
       [] partition( Part ) then
 	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
       [] wave( FileName ) then

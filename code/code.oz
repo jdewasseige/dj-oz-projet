@@ -32,8 +32,9 @@ local Mix Interprete Projet CWD in
       \insert 'InterpreteCode.oz' % /Users/John/dj-oz-projet/code/InterpreteCode.oz
    end
 
-   local 
-      Music = {Projet.load CWD#'joie.dj.oz'}
+   local
+      Tbegin = {Time.time}
+      Music = {Projet.load CWD#'joieBis.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -42,5 +43,6 @@ local Mix Interprete Projet CWD in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
       {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
+      {Browse {VirtualString.toAtom 'temps ecoule: '#{Time.time}-Tbegin#' secondes'}}
    end
 end

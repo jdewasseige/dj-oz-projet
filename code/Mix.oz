@@ -5,14 +5,14 @@ fun {Mix Interprete Music}
    [] Morceau|Rest then % Pas oublier Rest !!!
       case Morceau
       of voix( Voix ) then
-	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}}
+	 {Flatten {MixVoix Voix}|{Mix Interprete Rest}} % APPEND à LA PLACE DE FLATTEN ???
       [] partition( Part ) then
 	 {Flatten {MixVoix {Interprete Part}}|{Mix Interprete Rest}}
       [] wave( FileName ) then
 	 nil
 	 %{Projet.readFile FileName}
       [] merge( MusicInt ) then
-	 {Merge MusicInt}
+	 {Merge MusicInt}  
       [] renverser( Music ) then
 	 {Reverse {Mix Interprete Music}} 
       [] repetition( nombre:N Music ) then
@@ -330,7 +330,6 @@ end
 
 
 
-
 % partition() : DONE OK
 % voix() : DONE
 % merge() : DONE
@@ -363,7 +362,7 @@ Music4 = partition (Partition2)
 MusicInt = [(0.4#Music1) (0.6#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
-%{Browse {Mix Interprete Music5}}
+{Browse {Mix Interprete Music5}}
 Music6 = [ renverser( Music2bis ) ]
 Music7 = [ repetition(nombre:2 Music2bis) ]
 Music8 = [ repetition( duree:0.00015 Music2) ]
