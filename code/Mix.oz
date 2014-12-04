@@ -56,7 +56,7 @@ fun {RepeteN N Vec}
 	    end
 	 end
       in
-	 {RepeteNAcc N Vec Vec}
+	 {RepeteNAcc Nr Vec Vec}
          % Si N = 0, on joue la musique une fois
       end
    end
@@ -267,12 +267,15 @@ fun {MixVoix Voix}
       [] silence(duree:D)|Rest then
 	 N = {FloatToInt D*44100.0}
 	 {Flatten {MixSilence 1 N}|{MixVoix Rest}}
-      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+      [] echantillon( hauteur:H duree:D instrument:none )|Rest then
 	 N = {FloatToInt D*44100.0}
 	 F = {Pow 2.0 {IntToFloat H}/12.0} * 440.0
 	 K = 2.0*Pi*F/44100.0
-	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
-	 % Ce fondu lisse chaque note
+	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest} %Ce fondu lisse chaque note
+      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
+	 local Ech in
+	    Ech = echantillon(hauteur:H duree:D instrument:I)
+	    {UseWav Ech}|{MixVoix Rest}
       end
    end
 end
@@ -291,6 +294,42 @@ fun {MixEch K I Max}
    end
 end
 
+fun {UseWav Ech}
+   case Ech
+   of echantillon(hauteur:H duree:D instrument:I) then
+      local Nom Note in
+	 Nom = {VirtualString.toAtom I}
+	 Note = {VirtualString.toAtom {GetNote H}}
+	 {Project.readFile CWD#'wave/instruments/'#Nom#'_'#Note#'.wav'}
+      end
+   else nil end
+end
+
+fun {GetNote H}
+   local Octave Letter in
+   if H >= 0 then
+      Octave = 4 + ( (H+9) div 12 )
+      Letter = H - (Octave-4)*12
+   else
+      Octave = 4 + ( (H-2) div 12 )
+      Letter = H - (Octave-4)*12
+   end
+   case Letter
+   of 0 then 'a'#Octave
+   [] 1 then 'a'#Octave#'#'
+   [] 2 then 'b'#Octave
+   [] ~9 then 'c'#Octave
+   [] ~8 then 'c'#Octave#'#'
+   [] ~7 then d 'd'#Octave
+   [] ~6 then d 'd'#Octave#'#'
+   [] ~5 then e 'b'#Octave#'#'
+   [] ~4 then 'f'#Octave#
+   [] ~3 then 'f'#Octave#'#'
+   [] ~2 then 'g'#Octave
+   [] ~1 then 'g'#Octave#'#'
+   end
+   end
+end
 
 
 

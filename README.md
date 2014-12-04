@@ -20,6 +20,10 @@ Reminder :
 * Rapport
 * Instruments et/ou effets dans le hobbit
 * Tester effets sur le hobbit ou sur joie
+* à la fin de MixVoix (et peut-être dans d'autres fonctions), rajouter un else
+qui renverrait nil 
+* à la fin de MixVoix (et peut-être dans d'autres fonctions), rajouter un else
+qui renverrait nil ?
 
 Just done :
 * asserts + vérifier nombres réels et entiers

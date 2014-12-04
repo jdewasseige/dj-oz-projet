@@ -10,7 +10,7 @@ fun {Interprete Partition}
    [] NestedPart|Rest then
       {Flatten {Interprete NestedPart}|{Interprete Rest}}
    [] muet( Part ) then
-	{Interprete bourdon(note:silence Part)}
+      {Interprete bourdon(note:silence Part)}
    [] duree( secondes:N Part ) then
       % Le rapport de duree des echantillons entre eux est conserve
       local Nr DTot Voix in
@@ -29,14 +29,14 @@ fun {Interprete Partition}
       {Bourdon {GivesH Note} {Interprete Part}}
    [] transpose( demitons:N Part ) then
       {Transpose N {Interprete Part}}
-   %[] instrument( nom:Instru Part ) then
-   %   {Instrument Instru Part}
+   [] instrument( nom:Instru Part ) then
+      {Instrument Instru {Interprete Part}}
    else % Partition est une note
       if Partition == silence then
 	 [silence(duree:1.0)]
       else
 	 [echantillon(hauteur:{GivesH Partition}
-		     duree:1.0 instrument:none)]
+		      duree:1.0 instrument:none)]
       end
    end
 end
@@ -113,7 +113,7 @@ fun {Bourdon Hb Voix}
 	 [] echantillon(hauteur:H duree:D instrument:I) then
 	    echantillon(hauteur:Hb duree:D instrument:I)|{Bourdon Hb Rest}
 	 end
-     end
+      end
    end
 end
 
@@ -128,8 +128,8 @@ fun {Transpose Nr Voix}
       [] Ech|Rest then
 	 case Ech
 	 of silence(duree:D) then
-	       silence(duree:D)|{Transpose N Rest}
-	    [] echantillon(hauteur:H duree:D instrument:I) then
+	    silence(duree:D)|{Transpose N Rest}
+	 [] echantillon(hauteur:H duree:D instrument:I) then
 	    echantillon(hauteur:H+N duree:D instrument:I)|{Transpose N Rest}
 	 end
       end
@@ -137,8 +137,24 @@ fun {Transpose Nr Voix}
 end
 
 
-%fun {Instrument Instru Part}
-%end
+fun {Instrument Instru Voix}
+   fun {InstrumentAcc Voix Acc}
+      case Voix
+      of nil then {Reverse Acc}
+      [] Ech|Rest then
+	 case Ech
+	 of silence(duree:D) then
+	    {InstrumentAcc Rest Ech|Acc}
+	 [] echantillon(hauteur:H duree:D instrument:none) then
+	    {InstrumentAcc Rest echantillon(hauteur:H duree:D instrument:Instru)|Acc}
+	 [] echantillon(hauteur:H duree:D instrument:I) then
+	    {InstrumentAcc Rest Ech|Acc}
+	 end
+      end
+   end
+in
+   {InstrumentAcc Voix nil}
+end
 
 fun {GivesDureeTot Voix}
    local 
