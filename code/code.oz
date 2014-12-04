@@ -23,7 +23,7 @@ local Mix Interprete Projet CWD in
       %Audio = {Projet.readFile CWD#'wave/animaux/cow.wav'}
       ToNote GivesH Etirer Bourdon Transpose GivesDureeTot
       RepeteN RepeteD Clip Echo CalcFirstIntensity Couper
-      MixVoix MixEch MergeHelper SumMatrix Sum Fondu FonduE Assert
+      MixVoix MixSilence MixEch Merge MergeAux Fondu FonduE Assert
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       \insert 'MixCode.oz' % /Users/John/dj-oz-projet/code/MixCode.oz
@@ -41,6 +41,6 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-      {Browse {Projet.run Mix Interprete Music CWD#'out42.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
    end
 end
