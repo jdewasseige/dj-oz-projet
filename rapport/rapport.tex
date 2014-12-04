@@ -32,6 +32,11 @@ Nous avons procédé de la même manière pour implémenter \fun{Interprete} et 
 
 Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour !
 
+\paragraph{Limitations}
+Le plus grand problème est certainement la lenteur de l'implémentation Mozart 2. 
+On compte en moyenne $50$ à $60$ secondes pour produire un fichiers \fun{wav} d'une 
+durée d'environ $1$ minute.
+
 \section{Décisions de conception}
 
 \paragraph{Assert}
@@ -117,9 +122,58 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 
 \section{Extensions}
 
-\subsection{Lissage}
+Afin d'améliorer le rendu sonore de notre morceau 
+ainsi que d'agrandir la gamme de fonctions qui modifient les morceaux, 
+nous avons réaliser plusieurs extensions.
+
+\subsection{Enveloppe sonore trapézo\"idale}
+
+La première est une enveloppe sonore trapézo\"idale, elle remplit une fonction de lissage.
+Autrement dit, elle permet d'adoucir les bruits désagréables créés entre chaque note.
+L'implémentation de cette enveloppe est relativement simple dans 
+un sens où elle consiste à appliquer un fondu (fonction \fun{Fondu}) sur chaque note. 
+Le fondu une augmentation linéaire du volume en début de note puis 
+une diminution également linéaire du volume à la fin de la note. 
+Après quelques observations et comparaisons de la durée du fondu, 
+nous constatons qu'avec une durée d'un dixième de celle de la note, 
+on adoucit parfaitement toutes les imperfections sans pour autant 
+réduire le volume.
+
+
+\subsection{Enveloppe sonore ADSR}
+\label{subsec:adsr}
+
+Le rôle joué par l'enveloppe sonore ADSR est le même que celui de l'enveloppe trapézo\"idale. 
+Elle permet cependant plus de liberté : il y a 4 paramètres. 
+L'\emph{attack} qui correspond au temps nécessaire pour arriver linéairement 
+au volume maximum, le \emph{decay} qui indique le temps qu'il faut pour faire régresser 
+le volume jusqu'à atteindre un palier, le \emph{sustain} au cours duquel le volume est constant. 
+Il reste finalement le \emph{release}, qui est la durée avant la fin de la note pendant laquelle 
+le volume décroit linéairement pour finalement être nul.
+Cette extension est implémentée dans la fonction \fun{EnveloppeADSR} 
+et nous l'utilisons dans \fun{MixVoix} (avec les paramètres qui nous semble les plus 
+efficaces) pour adoucir chaque note.
+
 
 \subsection{Instrument}
+
+Cette extension permet d'utiliser des instruments pour jouer différentes notes, 
+ce qui nous permet d'avoir un plus grand choix pour créer nos morceaux, 
+ainsi que de jouer plusieurs instruments à la fois. 
+
+La fonction \fun{Instrument} est implémentée dans Inteprete.oz, 
+on utilise ensuite deux fonctions auxiliaires, \fun{UseWav} qui permet 
+de transformer un échantillon en un vecteur audio, puis \fun{GetNote} qui permet 
+de déterminer une note en fonction de la hauteur de l'échantillon. 
+Les cas où la durée de l'échantillon est différente de celle du vecteur audio 
+sont évidemment pris en compte.
+Ceci est fait en combinant les fonctions \fun{Couper} et \fun{RepeteD}. 
+Nous finissons par lisser les vecteurs audios avec une enveloppe ADSR (section \ref{subsec:adsr}).
+
+\paragraph{Remarque}
+Pour une raison inconnue, nous rencontrons un problème dans lors de l'éxécution de \fun{Instrument}.
+Nous avons donc séparer cette extension dans un fichier \textit{instrument.oz}.
+
 
 
 \end{document}
