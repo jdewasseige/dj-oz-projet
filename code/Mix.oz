@@ -11,7 +11,7 @@ fun {Mix Interprete Music}
 	    Audio = {MixVoix {Interprete Part}}
 	 [] wave( FileName ) then
 	    Audio = nil % pour que ça compile
-	    % Audio = {Projet.readFile FileName}
+	    %Audio = {Projet.readFile FileName}
 	 [] merge( MusicInt ) then
 	    Audio = {Merge MusicInt}  
 	 [] renverser( Music ) then
@@ -145,10 +145,10 @@ fun {CalcFirstIntensity Dec Rep} % Dec:decadence Rep:repetition
       if {IsFloat Rep} then Rr = {FloatToInt {Abs Rep}} 
       else Rr = {Abs Rep} end
       fun {SumDec R Count Acc}
-	    if R == 0 then Acc
-	    else
-	       {SumDec R-1 Count+1.0 Acc+{Pow Dec Count}}
-	    end
+	 if R == 0 then Acc
+	 else
+	    {SumDec R-1 Count+1.0 Acc+{Pow Dec Count}}
+	 end
       end
       1.0/(1.0 + {SumDec Rr 1.0 0.0})
    end
@@ -250,7 +250,37 @@ fun {Couper Debut Fin Vec}
    end
 end
 
+declare
+fun {EnveloppeADSR A D S R Vec} % A - attack , D - decay , S - sustain , R - release
+   local L0 EnvADSRaux in
+      L0 = {IntToFloat {Length Vec}}
+      fun {EnvADSRaux Count A D S R L0 Vec Acc}
+	 case Vec
+	 of nil then {Reverse Acc}
+	 [] H|T then
+	    local Fact
+	       if Count < A then
+		  Fact = Count/A
+	       elseif (Count - A) < D then
+		  Fact = 1.0 - (Count-A)*(1.0-S)/D
+	       elseif Count < (L0 - R) then
+		  Fact = S
+	       else
+		  Fact = S*(L0-Count)/R
+	       end
+	    in
+	       {EnvADSRaux Count+1.0 A D S R L0 T H*Fact|Acc}
+	    end
+	 end
+      end
+      {EnvADSRaux 1.0 A*L0 D*L0 S R*L0 L0 Vec nil}   
+   end
+end
 
+	    
+	    
+
+      
 
    
 
@@ -273,11 +303,12 @@ fun {MixVoix Voix}
 	 K = 2.0*Pi*F/44100.0
 	 {Fondu FactLissage*D FactLissage*D {MixEch K 1 N}}|{MixVoix Rest}
          % Ce fondu lisse chaque echantillon (cfr extension lissage)
-      [] echantillon( hauteur:H duree:D instrument:I )|Rest then
-	 local Ech in
-	    Ech = echantillon(hauteur:H duree:D instrument:I)
-	    {UseWav Ech}|{MixVoix Rest}
-	 end
+      %[] echantillon( hauteur:H duree:D instrument:I )|Rest then
+	% local Ech 
+	 %   Ech = echantillon(hauteur:H duree:D instrument:I)
+	 %in
+	  %  {Flatten {UseWav Ech}|{MixVoix Rest}}
+	% end
       end
    end
 end
@@ -296,46 +327,8 @@ fun {MixEch K I Max}
    end
 end
 
-fun {UseWav Ech}
-   case Ech
-   of echantillon(hauteur:H duree:D instrument:I) then
-      local Nom Note in
-	 Nom = {VirtualString.toAtom I}
-	 Note = {VirtualString.toAtom {GetNote H}}
-	 %{Project.readFile CWD#'wave/instruments/'#Nom#'_'#Note#'.wav'}
-	 nil % pour que ça compile
-      end
-   else nil end
-end
 
-% DEBUGGER GETNOTE
 
-fun {GetNote H}
-%   local Octave Letter in
-%   if H >= 0 then
-%      Octave = 4 + ( (H+9) div 12 )
-%      Letter = H - (Octave-4)*12
-%   else
-%      Octave = 4 + ( (H-2) div 12 )
-%      Letter = H - (Octave-4)*12
-%   end
-%   case Letter
-%   of 0 then 'a'#Octave
-%   [] 1 then 'a'#Octave#'#'
-%   [] 2 then 'b'#Octave
-%   [] ~9 then 'c'#Octave
-%   [] ~8 then 'c'#Octave#'#'
-%   [] ~7 then d 'd'#Octave
-%   [] ~6 then d 'd'#Octave#'#'
-%   [] ~5 then e 'b'#Octave#'#'
-%   [] ~4 then 'f'#Octave#
-%   [] ~3 then 'f'#Octave#'#'
-%   [] ~2 then 'g'#Octave
-%   [] ~1 then 'g'#Octave#'#'
-%   end
-%   end
-   nil % pour que ça compile
-end
 
 
 
@@ -343,14 +336,15 @@ end
 %%% MERGE %%%
 %%%%%%%%%%%%%
 fun {Merge MusInt}
-      case MusInt
-      of H|T then
-	 case H
-	 of Intensity#Mus then
-	    {MergeAux {Mix Interprete Mus} Intensity {Merge T} 1.0}
-	 else nil end
+   case MusInt
+   of H|T then
+      case H
+      of Intensity#Mus then
+	 {MergeAux {Mix Interprete Mus} Intensity {Merge T} 1.0}
       else nil end
-   end
+   else nil end
+end
+
 fun {MergeAux Vec1 Int1 Vec2 Int2}
    case Vec1
    of H1|T1 then
@@ -395,7 +389,7 @@ end
 %%%%%%%%%%%%%
 %%% TESTS %%%
 %%%%%%%%%%%%%
-\insert 'Interprete.oz' % /Users/john/dj-oz-projet/code/Interprete.oz
+\insert '/Users/john/dj-oz-projet/code/Interprete.oz' % /Users/john/dj-oz-projet/code/Interprete.oz
 declare
 Music0 = [ voix( [ echantillon( hauteur:1 duree:0.0001 instrument:none) ] ) ]
 Music1 = [ voix( [ echantillon( hauteur:0 duree:0.0001 instrument:none) ] ) ]
@@ -414,10 +408,12 @@ Music8 = [ repetition( duree:0.00015 Music2) ]
 Music9 = [ clip(bas:~0.001 haut:0.09242 Music2bis) ]
 Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
-Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
+Music12= [ couper(debut:0.0 fin:0.0005 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-%{Browse {Mix Interprete Music5}}
-%{Browse {Mix Interprete Music8}}
+%{Browse {Mix Interprete Music2bis}}
+%{Browse {EnveloppeADSR 0.04 0.02 0.8 0.05 {Mix Interprete Music2bis}}}
 %{Browse {Mix Interprete Music0}}
 Music14 = {Append Music0 {Append Music1 Music0}}
-{Browse {Mix Interprete Music14}}
+Music15 = [partition([instrument(nom:drums [c4 d4 d4 c4])])]
+%{Browse {Mix Interprete Music12}}
+%{Browse {Mix Interprete Music14}}
