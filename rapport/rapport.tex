@@ -1,6 +1,11 @@
-\documentclass[a4paper,oneside,12pt]{article}
+\documentclass[a4paper,oneside,10pt]{article}
 
 \usepackage{./custom}
+\usepackage[utf8]{inputenc}
+\usepackage{layout}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{textcomp}
 
 \title{Projet DJ'Oz \\ \small{FSAB1402}}
 \author{Antoine Legat \\(4776-1300) \and John de Wasseige \\(5224-1300)}
@@ -8,6 +13,7 @@
 
 \newcommand{\fun}[1]{\texttt{#1}}
 \newcommand{\bigO}[1]{$\mathcal{O(\text{$ #1 $})}$}
+\newcommand{\bslash}{\texttt{\symbol{92}}}
 
 \begin{document}
 
@@ -18,6 +24,35 @@
 % décrire les extensions
 
 \section{Structure du programme}
+\fun{code.oz} crée un fichier audio \fun{out.wav} à partir d'une partition d'un certain format \fun{example.dj.oz} par le biais des fonctions \fun{Mix} et \fun{Interprete}.
+
+Pour une meilleure lisibilité du code, nous avons décidé d'insérer le code de ces deux fonctions (ainsi que leurs sous-fonctions auxiliaires) avec la commande \fun{\bslash insert 'fileName.oz'}. Ce choix, en plus de réduire l'indentation, fut extrêmement pratique pour implémenter et debugger nos fonctions. Il est à noter que cette commande fonctionne exactement comme le \fun{\bslash input\{fileName.tex\}} du \LaTeX.
+
+Nous avons procédé de la même manière pour implémenter \fun{Interprete} et \fun{Mix}. La fonction-mère contient un grand \fun{case Partition\bslash Music} qui gère tous les cas d'input que le programme doit pouvoir gérer. Selon le pattern reconnu, la fonction-mère va alors appeler une sous-fonction auxiliaire qui gère cette possibilité en particulier. L'usage de ces sous-fonctions, en plus de rendre le code plus lisible, est indispensable puisque la plupart sont récursives.
+
+Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour !
+
+\section{Décisions de conception}
+
+\paragraph{Assert}
+Appréciant la limpidité de la procédure \fun{Assert} définie dans \fun{Projet2014.oz}, nous avons recopié sa définition afin de pouvoir l'utiliser dans nos fonctions. Ce fut d'une grande aide pour débugger et cela rend également nos fonctions plus explicites si elles crashent à cause d'un mauvais input. Nous avons également utilisé de temps à autres un \fun{raise} lorsque c'était plus adapté.
+
+\paragraph{Robustesse}
+Nous avons tenu à rendre notre code plus robuste en convertissant l'input dès que c'était raisonnable et possible. Par exemple, pour \fun{RepeteD}, la durée doit être un \fun{float} positif, mais nous la convertissons si ce n'est pas le cas (p.ex. \fun{$\sim$ 42} sera converti en \fun{42.0}).
+
+\paragraph{Eviter \fun{Append}}
+Nous avons tenu à éviter l'usage de la fonction \fun{Append} car elle est de complexité linéaire \bigO{n}. Nous concaténons donc en utilisant le symbole |, ainsi qu'un \fun{Reverse} ou un \fun{Flatten} quand cela s'avère nécessaire.
+
+\paragraph{Récursion terminale}
+Nous avons veillé à ce que nos fonctions soient récursives terminales, soit par l'usage d'un accumulateur, soit (pour les listes) en utilisant judicieusement l'avantage de la programmation déclarative, c'est-à-dire en renvoyant quelque chose comme \fun{Résultat|\{Fonction Reste\}}.
+	
+\paragraph{Constructions non-déclaratives}
+N'en ayant pas eu besoin, nous n'en avons pas utilisé.
+% assert
+% float int robustesse abs
+% | et pas append + reverse
+% Acc réc terminales
+% utilisé au max api (reverse, map,...)
 
 \section{Complexité des fonctions}
 
@@ -35,7 +70,7 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		Fonction & Complexité & Commentaires  \\
 		\hline \hline
 		\fun{ToNote} & \bigO{n} & Here is a test commentaire.  \\
-	       	\fun{GivesH}  & \bigO{n} & test  \\
+	       	\fun{GetHauteur}  & \bigO{n} & test  \\
 		\fun{Etirer} & \bigO{n} & test  \\
 		\fun{Bourdon} & \bigO{n} & test  \\
 		\fun{Transpose} & \bigO{n} & test  \\

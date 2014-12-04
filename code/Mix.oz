@@ -1,3 +1,7 @@
+% DJ'Oz - LFSAB1402 - Projet 2014
+% Antoine LEGAT    4776-1300
+% John DE WASSEIGE 5224-1300
+
 declare % /!\ ne pas oublier d’enlever ‘declare’
 fun {Mix Interprete Music}
    case Music
@@ -410,9 +414,15 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(debut:0.0 fin:0.0005 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
+<<<<<<< HEAD
 %{Browse {Mix Interprete Music2bis}}
 %{Browse {EnveloppeADSR 0.04 0.02 0.8 0.05 {Mix Interprete Music2bis}}}
 %{Browse {Mix Interprete Music0}}
+=======
+{Browse {Mix Interprete Music5}}
+{Browse {Mix Interprete Music8}}
+{Browse {Mix Interprete Music0}}
+>>>>>>> FETCH_HEAD
 Music14 = {Append Music0 {Append Music1 Music0}}
 Music15 = [partition([instrument(nom:drums [c4 d4 d4 c4])])]
 %{Browse {Mix Interprete Music12}}
