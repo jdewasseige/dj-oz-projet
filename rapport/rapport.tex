@@ -1,6 +1,10 @@
-\documentclass[a4paper,oneside,12pt]{article}
+\documentclass[a4paper,oneside,10pt]{article}
 
 \usepackage{./custom}
+\usepackage[utf8]{inputenc}
+\usepackage{layout}
+\usepackage{graphicx}
+\usepackage{fullpage}
 
 \title{Projet DJ'Oz \\ \small{FSAB1402}}
 \author{Antoine Legat \\(4776-1300) \and John de Wasseige \\(5224-1300)}
@@ -8,6 +12,7 @@
 
 \newcommand{\fun}[1]{\texttt{#1}}
 \newcommand{\bigO}[1]{$\mathcal{O(\text{$ #1 $})}$}
+\newcommand{\bslash}{\texttt{\symbol{92}}}
 
 \begin{document}
 
@@ -18,7 +23,14 @@
 % décrire les extensions
 
 \section{Structure du programme}
+\fun{code.oz} crée un fichier audio \fun{out.wav} à partir d'une partition \fun{example.dj.oz} respectant un certain format par le biais des fonctions \fun{Mix} et \fun{Interprete}.
 
+Pour une meilleure lisibilité du code, nous avons décidé d'insérer le code de ces deux fonctions (ainsi que leurs sous-fonctions auxiliaires) avec la commande \fun{\bslash insert 'fileName.oz'}. Ce choix, en plus de réduire l'indentation, fut extrêmement pratique pour implémenter et debugger nos fonctions. Il est à noter que cette commande fonctionne exactement comme le \fun{\bslash input\{fileName.tex\}} du \LaTeX.
+
+%- Mix, Interprete, example
+%- fct externes propreté récursion
+%- hobbit
+%- insert
 \section{Complexité des fonctions}
 
 Les complexités des différentes sous-fonctions de \fun{Inteprete} (resp. \fun{Mix})
@@ -35,7 +47,7 @@ se trouvent dans le tableau \ref{tab:complexite_interprete}
 		Fonction & Complexité & Commentaires  \\
 		\hline \hline
 		\fun{ToNote} & \bigO{n} & Here is a test commentaire.  \\
-	       	\fun{GivesH}  & \bigO{n} & test  \\
+	       	\fun{GetHauteur}  & \bigO{n} & test  \\
 		\fun{Etirer} & \bigO{n} & test  \\
 		\fun{Bourdon} & \bigO{n} & test  \\
 		\fun{Transpose} & \bigO{n} & test  \\

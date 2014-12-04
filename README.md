@@ -15,6 +15,7 @@ TO DO dans l’ordre:
 	* JOHN : réorganiser le code (GetNote à coté de ToNote) ?
 	* JOHN : faire une fonction Duree dans Interprete? (lisibilité)
 * 1ère version du rapport
+* noms, prénoms et nomas dans code
 * 1ère soumission
 
 * Tests : tester les effets avec le hobbit et/ou sur joie (surtt écho, couper et merge)
