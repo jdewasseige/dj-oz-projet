@@ -23,14 +23,16 @@
 % décrire les extensions
 
 \section{Structure du programme}
-\fun{code.oz} crée un fichier audio \fun{out.wav} à partir d'une partition \fun{example.dj.oz} respectant un certain format par le biais des fonctions \fun{Mix} et \fun{Interprete}.
+\fun{code.oz} crée un fichier audio \fun{out.wav} à partir d'une partition d'un certain format \fun{example.dj.oz} par le biais des fonctions \fun{Mix} et \fun{Interprete}.
 
 Pour une meilleure lisibilité du code, nous avons décidé d'insérer le code de ces deux fonctions (ainsi que leurs sous-fonctions auxiliaires) avec la commande \fun{\bslash insert 'fileName.oz'}. Ce choix, en plus de réduire l'indentation, fut extrêmement pratique pour implémenter et debugger nos fonctions. Il est à noter que cette commande fonctionne exactement comme le \fun{\bslash input\{fileName.tex\}} du \LaTeX.
 
-%- Mix, Interprete, example
-%- fct externes propreté récursion
-%- hobbit
-%- insert
+Nous avons procédé de la même manière pour implémenter \fun{Interprete} et \fun{Mix}. La fonction-mère contient un grand \fun{case Partition\bslash Music} qui gère tous les cas d'input que le programme doit pouvoir gérer. Selon le pattern reconnu, la fonction-mère va alors appeler une sous-fonction auxiliaire qui gère cette possibilité en particulier. L'usage de ces sous-fonctions, en plus de rendre le code plus lisible, est indispensable puisque la plupart sont récursives.
+
+Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour !
+
+\section{Décisions de conception}
+
 \section{Complexité des fonctions}
 
 Les complexités des différentes sous-fonctions de \fun{Inteprete} (resp. \fun{Mix})
