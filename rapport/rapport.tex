@@ -5,6 +5,7 @@
 \usepackage{layout}
 \usepackage{graphicx}
 \usepackage{fullpage}
+\usepackage{textcomp}
 
 \title{Projet DJ'Oz \\ \small{FSAB1402}}
 \author{Antoine Legat \\(4776-1300) \and John de Wasseige \\(5224-1300)}
@@ -32,6 +33,26 @@ Nous avons procédé de la même manière pour implémenter \fun{Interprete} et 
 Enfin, nous avons choisi comme fichier de test l'incontournable \textit{Concerning Hobbits} d'Howard Shore. En effet, étant donné la très prochaine sortie du dernier volet de la saga \textit{The Hobbit}, nous tenions à remettre ce chef d'oeuvre de la saga initiale au goût du jour !
 
 \section{Décisions de conception}
+
+\paragraph{Assert}
+Appréciant la limpidité de la procédure \fun{Assert} définie dans \fun{Projet2014.oz}, nous avons recopié sa définition afin de pouvoir l'utiliser dans nos fonctions. Ce fut d'une grande aide pour débugger et cela rend également nos fonctions plus explicites si elles crashent à cause d'un mauvais input. Nous avons également utilisé de temps à autres un \fun{raise} lorsque c'était plus adapté.
+
+\paragraph{Robustesse}
+Nous avons tenu à rendre notre code plus robuste en convertissant l'input dès que c'était raisonnable et possible. Par exemple, pour \fun{RepeteD}, la durée doit être un \fun{float} positif, mais nous la convertissons si ce n'est pas le cas (p.ex. \fun{$\sim$ 42} sera converti en \fun{42.0}).
+
+\paragraph{Eviter \fun{Append}}
+Nous avons tenu à éviter l'usage de la fonction \fun{Append} car elle est de complexité linéaire \bigO{n}. Nous concaténons donc en utilisant le symbole |, ainsi qu'un \fun{Reverse} ou un \fun{Flatten} quand cela s'avère nécessaire.
+
+\paragraph{Récursion terminale}
+Nous avons veillé à ce que nos fonctions soient récursives terminales, soit par l'usage d'un accumulateur, soit (pour les listes) en utilisant judicieusement l'avantage de la programmation déclarative, c'est-à-dire en renvoyant quelque chose comme \fun{Résultat|\{Fonction Reste\}}.
+	
+\paragraph{Constructions non-déclaratives}
+N'en ayant pas eu besoin, nous n'en avons pas utilisé.
+% assert
+% float int robustesse abs
+% | et pas append + reverse
+% Acc réc terminales
+% utilisé au max api (reverse, map,...)
 
 \section{Complexité des fonctions}
 
