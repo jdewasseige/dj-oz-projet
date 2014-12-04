@@ -45,6 +45,8 @@ fun {Interprete Partition}
 	    {Transpose N Voix}
 	 end
       end
+   %[] instrument( nom:Instru Part ) then
+   %   {Instrument Instru Part}
    else % Partition est une note
       if Partition == silence then
 	 [silence(duree:1.0)]
@@ -142,6 +144,9 @@ fun {Transpose N Voix}
 end
 
 
+%fun {Instrument Instru Part}
+%end
+
 fun {GivesDureeTot Voix}
    local 
       fun {GivesDureeTotAcc Voix Acc}
@@ -163,7 +168,7 @@ declare
 Partition2 = duree( secondes:24 b2)
 %{Browse {Interprete Partition2}}
 Partition1 = duree( secondes:42 [a2 etirer(facteur:5 [[b [c5] a4] d
-	transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
+						      transpose(demitons:20 [d])]) bourdon(note:a [b [[[b]] b]]) silence a#4 ])
 %{Browse {Interprete [Partition1 muet(Partition1)]}}
 %{Browse {Interprete duree(secondes:0.0001 [a2] )}}
 %{Browse {Interprete [a4 b2]}}

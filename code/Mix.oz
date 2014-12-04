@@ -12,12 +12,7 @@ fun {Mix Interprete Music}
 	 nil
 	 %{Projet.readFile FileName}
       [] merge( MusicInt ) then
-	 case {MergeHelper MusicInt nil nil}
-	 of sumsVectors(sumAudios:SumAud sumF:SumF) then
-	    {Flatten {DivideVectors SumAud SumF}|{Mix Interprete Rest}}
-	    % Cette ligne divise le vecteur audio résultant par le vecteur
-            % résultant des facteurs (et concatène le résultat avec la suite...).
-	 end  
+	 {Merge MusicInt}  
       [] renverser( Music ) then
 	 {Reverse {Mix Interprete Music}} 
       [] repetition( nombre:N Music ) then
@@ -302,80 +297,31 @@ end
 %%%%%%%%%%%%%
 %%% MERGE %%%
 %%%%%%%%%%%%%
-fun {MergeHelper MusicInt SumAud SumF}
-   case MusicInt
-   of nil then sumsVectors(sumAudios:SumAud sumF:SumF)
-   [] (F#Music)|Rest then % selon moi ça marche avec et sans les ()
-                          % autour de F#Music, une préférence ?
-      local Fr Audio AudioMult in
-	 % Pour la robustesse
-	 if {IsInt F} then Fr = {IntToFloat F}
-	 else Fr = F end
-	 Audio = {Mix Interprete Music}
-	 AudioMult =  {List.map Audio fun {$ N} Fr*N end}
-	 { MergeHelper Rest
-	   {Sum AudioMult SumAud}
-	   {Sum SumF {MakeVector Fr {Length Audio}}} }
-      % Cette ligne appelle MergeHelper avec Rest
-      % comme MusicInt, en additionnant AudioMult à SumAud et en
-      % additionnant un vecteur de la même taille qu'Audio mais
-      % "rempli" du facteur à SumF.
-      end
+fun {Merge MusInt}
+      case MusInt
+      of H|T then
+	 case H
+	 of Intensity#Mus then
+	    {MergeAux {Mix Interprete Mus} Intensity {Merge T} 1.0}
+	 else nil end
+      else nil end
    end
-end
-
-
-fun {MakeVector Value Length}
-   % Retourne un vecteur (une liste) de taille $Length
-   % et exclusivement composé de valeurs $Value
-   fun {MakeVectorAcc I Acc}
-      if I==0 then Acc
+fun {MergeAux Vec1 Int1 Vec2 Int2}
+   case Vec1
+   of H1|T1 then
+      case Vec2
+      of H2|T2 then
+	 (H1*Int1 + H2*Int2)|{MergeAux T1 Int1 T2 Int2}
       else
-	 {MakeVectorAcc I-1 Value|Acc}
+	 (H1*Int1)|{MergeAux T1 Int1 Vec2 Int2}
       end
-   end
-in
-   {MakeVectorAcc Length nil}
-end
-
-
-fun {DivideVectors V1 V2}
-   % Retourne le résultat de la division élément par élément de
-   % V1 par V2. V1 et V2 doivent avoir la même taille.
-   case V1
-   of nil then nil
-   [] H|T then
-      H/V2.1|{DivideVectors T V2.2}
-   end
-end
-
-
-fun {Sum L1 L2}
-   % This function adds up the elements of the lists L1 and L2
-   % one by one. If they don't have the same length, the one
-   % with smaller length is extended with zeros.
-   local Lbig Lshort SumAcc
-      if {Length L1} > {Length L2} then
-	 Lbig = L1
-	 Lshort = L2
+   else
+      case Vec2
+      of H2|T2 then
+	 (H2*Int2)|{MergeAux Vec1 Int1 T2 Int2}
       else
-	 Lbig = L2
-	 Lshort = L1
+	 nil
       end
-      fun {SumOpt Lshort Lbig}
-	 case Lshort
-	 of nil then
-	    case Lbig
-	    of nil then nil
-	    [] Hb|Tb then
-	       Hb|{SumOpt nil Tb}
-	    end
-	 [] Hs|Ts then
-	    (Hs+Lbig.1)|{SumOpt Ts Lbig.2}
-	 end
-      end
-   in
-      {SumOpt Lshort Lbig}
    end
 end
 
@@ -413,7 +359,7 @@ Music2bis = [ partition( duree(secondes:0.001 [a1 b2 c3] ) ) ]
 Music3 = partition (Partition1)
 Music4 = partition (Partition2)
 %{Browse {Mix Interprete Music2}}
-MusicInt = [(2.0#Music1) (60.0#Music2)]
+MusicInt = [(0.4#Music1) (0.6#Music2)]
 %{Browse {MergeHelper MusicInt nil 0.0}}
 Music5 = [ merge( MusicInt ) ]
 {Browse {Mix Interprete Music5}}
@@ -425,6 +371,6 @@ Music10= [ clip(bas:0.042 haut:0.00942 Music2bis) ]
 Music11= [ echo(delai:1.0 decadence:0.5 Music2bis) ]
 Music12= [ couper(bas:0.0005 haut:0.0007 Music2bis) ]
 Music13= [ fondu(ouverture:0.0001 fermeture:0.0001 Music2bis) ]
-%{Browse {Mix Interprete Music2bis}}
+%{Browse {Mix Interprete Music5}}
 %{Browse {Mix Interprete Music8}}
 %{Browse {Mix Interprete Music0}}

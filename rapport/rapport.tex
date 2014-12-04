@@ -6,6 +6,9 @@
 \author{Antoine Legat \\(4776-1300) \and John de Wasseige \\(5224-1300)}
 \date{4 décembre 2014}
 
+\newcommand{\fun}[1]{\texttt{#1}}
+\newcommand{\bigO}[1]{$\mathcal{O(\text{$ #1 $})}$}
+
 \begin{document}
 
 \maketitle
@@ -16,6 +19,69 @@
 
 \section{Structure du programme}
 
+\section{Complexité des fonctions}
+
+Les complexités des différentes sous-fonctions de \fun{Inteprete} (resp. \fun{Mix})
+se trouvent dans le tableau \ref{tab:complexite_interprete} 
+(resp. tableau \ref{tab:complexite_mix}).
+
+
+\subsection{Interprete}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Fonction & Complexité & Commentaires  \\
+		\hline \hline
+		\fun{ToNote} & \bigO{n} & Here is a test commentaire.  \\
+	       	\fun{GivesH}  & \bigO{n} & test  \\
+		\fun{Etirer} & \bigO{n} & test  \\
+		\fun{Bourdon} & \bigO{n} & test  \\
+		\fun{Transpose} & \bigO{n} & test  \\
+		\fun{GivesDureeTot} & \bigO{n} & test  \\
+		\hline
+	\end{tabular}
+	\caption{Complexités des fonctions de \fun{Interprete}.}
+	\label{tab:complexite_interprete}
+\end{table}
+
+\subsection{Mix}
+
+
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Fonction & Complexité & Commentaires  \\
+		\hline \hline
+		\fun{MixVoix} & \bigO{n} & Here is a test commentaire.  \\
+	       	\fun{MixSilence}  & \bigO{n} & test  \\
+		\fun{MixEch} & \bigO{n} & test  \\
+		\hline
+		\fun{Merge} & \bigO{n} & test  \\
+		\fun{MergeAux} & \bigO{n} & test  \\		
+		\hline
+		\fun{RepeteN} & \bigO{n} & test  \\
+		\fun{RepeteD} & \bigO{n} & test  \\ 
+		\fun{Clip} & \bigO{n} & test  \\
+		\fun{Echo} & \bigO{n} & test  \\
+		\fun{CalcFirstIntensity} & \bigO{n} & test  \\
+		\fun{Fondu} & \bigO{n} & test  \\
+		\fun{FonduE} & \bigO{n} & test  \\
+		\fun{Couper} & \bigO{n} & test  \\
+		\hline
+	\end{tabular}
+	\caption{Complexités des fonctions de \fun{Mix}.}
+	\label{tab:complexite_mix}
+\end{table}
+
+\section{Extensions}
+
+\subsection{Lissage}
+
+\subsection{Instrument}
 
 
 \end{document}
