@@ -1,16 +1,14 @@
-
-%fun {UseWav Ech}
-%   case Ech
-%   of echantillon(hauteur:H duree:D instrument:I) then
-%      local Nom Note  
-%	 Nom = {VirtualString.toAtom I}
-%	 Note = {GetNote H}
-	 % nil % pour que ça compile
- %     in
-%	 {RepeteD D {Couper 1.0 D {Project.readFile {VirtualString.toAtom 'wave/instruments/'#Nom#'_'#Note#'.wav'}}}}
- %     end
-  % else nil end
-%end
+fun {UseWav Ech}
+   case Ech
+   of echantillon(hauteur:H duree:D instrument:I) then
+      local Nom Note  
+	 Nom = {VirtualString.toAtom I}
+	 Note = {GetNote H}
+      in
+	 {RepeteD D {Couper 1.0 D {Project.readFile {VirtualString.toAtom 'wave/instruments/'#Nom#'_'#Note#'.wav'}}}}
+      end
+   else nil end
+end
 
 fun {GetNote H}
    local Octave Lettre ToNote 
